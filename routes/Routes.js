@@ -35,6 +35,7 @@ const Routes = () => {
         initialRouteName="splash"
         screenOptions={{ headerShown: false }}
       >
+        
         <Stack.Screen name="splash" component={Splash} />
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="signup" component={SignupScreen} />
