@@ -5,5 +5,5 @@
   "ngrokPid": null,
   "webpackServerPort": null,
   "expoServerPort": null,
-  "packagerPort": 19000
+  "packagerPort": null
 }

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "EasyBuy",
+    "name": "atlas",
     "slug": "atlasproject",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.abidrazaa.EasyBuy",
+      "package": "com.atlas.hawta",
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ]
@@ -39,7 +39,10 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+        "@react-native-firebase/app",
+
+        "@react-native-firebase/auth"
     ],
     "extra": {
       "eas": {
