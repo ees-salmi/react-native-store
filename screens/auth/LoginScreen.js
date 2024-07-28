@@ -2,191 +2,98 @@ import {
   StyleSheet,
   Image,
   Text,
+  TextInput,
   View,
   StatusBar,
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-
 import React, { useState } from "react";
 import { colors, network } from "../../constants";
 import CustomInput from "../../components/CustomInput";
 import header_logo from "../../assets/logo/logo.png";
 import CustomButton from "../../components/CustomButton";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import LoginComponent from "../../components/LoginComponent/LoginComponent";
 import ProgressDialog from "react-native-progress-dialog";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import firebase from '@react-native-firebase/app';
+import { TouchableOpacity } from 'react-native';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
-  authDomain: "atlas-app-f8c98.firebaseapp.com",
-  projectId: "atlas-app-f8c98",
-  storageBucket: "atlas-app-f8c98.appspot.com",
-  messagingSenderId: "173835230328",
-  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
-  measurementId: "G-FPKHGNPC1J"
-};
+const LoginScreen = () => {
+  // If null, no SMS has been sent
+  const [confirm, setConfirm] = useState(null);
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  // Verification code (OTP - One-Time-Passcode)
+  const [code, setCode] = useState('');
 
-const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isloading, setIsloading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('+212606060481');
+  // Handle login
+  const navigation = useNavigation();
 
-  //method to store the authUser to aync storage
-  _storeData = async (user) => {
+  const signInWithPhoneNumber = async () => {
     try {
-      AsyncStorage.setItem("authUser", JSON.stringify(user));
+      console.log(phoneNumber);
+      const confirmation = await auth().signInWithPhoneNumber(phoneNumber, true);
+      setConfirm(confirmation);
     } catch (error) {
-      console.log(error);
-      setError(error);
+      console.log("An error occurred", error);
     }
   };
 
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({
-    email: email,
-    password: password,
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  //method to validate the user credentials and navigate to Home Screen / Dashboard
-  const loginHandle = () => {
-    setIsloading(true);
-    //[check validation] -- Start
-    // if email does not contain @ sign
-    if (email == "") {
-      setIsloading(false);
-      return setError("Please enter your email");
+  const confirmCode = async () => {
+    try {
+      const userCredential = await confirm.confirm(code);
+      const user = userCredential.user;
+      const userDocument = await firestore()
+        .collection("user")
+        .doc(user.uid)
+        .get();
+      if (userDocument.exists) {
+        navigation.navigate("HomeScreen");
+      } else {
+        navigation.navigate("Dashboard");
+      }
+    } catch (error) {
+      console.log('Invalid code.');
     }
-    if (password == "") {
-      setIsloading(false);
-      return setError("Please enter your password");
-    }
-    if (!email.includes("@")) {
-      setIsloading(false);
-      return setError("Email is not valid");
-    }
-    // length of email must be greater than 5 characters
-    if (email.length < 6) {
-      setIsloading(false);
-      return setError("Email is too short");
-    }
-    // length of password must be greater than 5 characters
-    if (password.length < 6) {
-      setIsloading(false);
-      return setError("Password must be 6 characters long");
-    }
-    //[check validation] -- End
-
-    fetch(network.serverip + "/login", requestOptions) // API call
-      .then((response) => response.json())
-      .then((result) => {
-        if (
-          result.status == 200 ||
-          (result.status == 1 && result.success != false)
-        ) {
-          if (result?.data?.userType == "ADMIN") {
-            //check the user type if the type is ADMIN then navigate to Dashboard else navigate to User Home
-            _storeData(result.data);
-            setIsloading(false);
-            navigation.replace("dashboard", { authUser: result.data }); // naviagte to Admin Dashboard
-          } else {
-            _storeData(result.data);
-            setIsloading(false);
-            navigation.replace("tab", { user: result.data }); // naviagte to User Dashboard
-          }
-        } else {
-          setIsloading(false);
-          return setError(result.message);
-        }
-      })
-      .catch((error) => {
-        setIsloading(false);
-        console.log("error", setError(error.message));
-      });
   };
 
   return (
-    <InternetConnectionAlert onChange={(connectionState) => {}}>
-      <KeyboardAvoidingView
-        // behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <ScrollView style={{ flex: 1, width: "100%" }}>
-          <ProgressDialog visible={isloading} label={"Login ..."} />
-          <StatusBar></StatusBar>
-          <View style={styles.welconeContainer}>
-            <View>
-              <Text style={styles.welcomeText}>Welcome to EasyBuy</Text>
-              <Text style={styles.welcomeParagraph}>
-                make your ecommerce easy
-              </Text>
-            </View>
-            <View>
-              <Image style={styles.logo} source={header_logo} />
-            </View>
-          </View>
-          <View style={styles.screenNameContainer}>
-            <Text style={styles.screenNameText}>Login</Text>
-          </View>
-          <View style={styles.formContainer}>
-            <CustomAlert message={error} type={"error"} />
-            <CustomInput
-              value={email}
-              setValue={setEmail}
-              placeholder={"Username"}
-              placeholderTextColor={colors.muted}
-              radius={5}
-            />
-            <CustomInput
-              value={password}
-              setValue={setPassword}
-              secureTextEntry={true}
-              placeholder={"Password"}
-              placeholderTextColor={colors.muted}
-              radius={5}
-            />
-            <View style={styles.forgetPasswordContainer}>
-              <Text
-                onPress={() => navigation.navigate("forgetpassword")}
-                style={styles.ForgetText}
-              >
-                Forget Password?
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-        <View style={styles.buttomContainer}>
-          <CustomButton text={"Login"} onPress={loginHandle} />
+   
+        <View>
+          {
+            !confirm ? (
+              <>
+                <Text style={{ textAlign: 'center', fontSize: 24, fontWeight: "bold" }}>
+                  Enter phone
+                </Text>
+
+                <CustomInput
+                  placeholder={"Enter phone here"}
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                />
+                <CustomButton onPress={signInWithPhoneNumber} text={"Send code"} />
+              </>
+            ) : (
+              <>
+                <Text>Enter code</Text>
+                <TextInput
+                  value={code}
+                  onChangeText={setCode}
+                  style={{ borderBottomWidth: 1, marginVertical: 10 }}
+                />
+                <TouchableOpacity onPress={confirmCode}>
+                  <Text>Confirm</Text>
+                </TouchableOpacity>
+              </>
+            )
+          }
         </View>
-        <View style={styles.bottomContainer}>
-          <Text>Don't have an account?</Text>
-          <Text
-            onPress={() => navigation.navigate("signup")}
-            style={styles.signupText}
-          >
-            signup
-          </Text>
-        </View>
-      </KeyboardAvoidingView>
-    </InternetConnectionAlert>
   );
 };
 
@@ -195,7 +102,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    flexDirecion: "row",
+    flexDirection: "row",
     backgroundColor: colors.light,
     alignItems: "center",
     justifyContent: "center",
@@ -217,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     display: "flex",
     width: "100%",
-    flexDirecion: "row",
+    flexDirection: "row",
     padding: 5,
   },
   logo: {

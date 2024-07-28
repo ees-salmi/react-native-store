@@ -34,17 +34,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ],
-        "@react-native-firebase/app",
-
-        "@react-native-firebase/auth"
-    ],
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"],
     "extra": {
       "eas": {
         "projectId": "3aa83b82-98dc-4eb4-9705-5de6641893de"
