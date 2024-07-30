@@ -19,9 +19,28 @@ import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+const firebaseConfig = {
+  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
+  authDomain: "atlas-app-f8c98.firebaseapp.com",
+  projectId: "atlas-app-f8c98",
+  storageBucket: "atlas-app-f8c98.appspot.com",
+  messagingSenderId: "173835230328",
+  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
+  measurementId: "G-FPKHGNPC1J"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const AddProductScreen = ({ navigation, route }) => {
-  const { authUser } = route.params;
+  //const { authUser } = route.params;
   const [isloading, setIsloading] = useState(false);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -56,105 +75,10 @@ const AddProductScreen = ({ navigation, route }) => {
   };
 
   //Method : Fetch category data from using API call and store for later you in code
-  const fetchCategories = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", getToken(authUser));
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-    setIsloading(true);
-    fetch(`${network.serverip}/categories`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setCategories(result.categories);
-          result.categories.forEach((cat) => {
-            let obj = {
-              label: cat.title,
-              value: cat._id,
-            };
-            payload.push(obj);
-          });
-          setItems(payload);
-          setError("");
-        } else {
-          setError(result.message);
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
-      });
-  };
-
-  var myHeaders = new Headers();
-  myHeaders.append("x-auth-token", authUser.token);
-  myHeaders.append("Content-Type", "application/json");
-
-  const upload = async () => {
-    console.log("upload-F:", image);
-
-    var formdata = new FormData();
-    formdata.append("photos", image, "product.png");
-
-    var ImageRequestOptions = {
-      method: "POST",
-      body: formdata,
-      redirect: "follow",
-    };
-
-    fetch(
-      "https://api-easybuy.herokuapp.com/photos/upload",
-      ImageRequestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => console.log("error", error));
-  };
-
-  var raw = JSON.stringify({
-    title: title,
-    sku: sku,
-    price: price,
-    image: image,
-    description: description,
-    category: category,
-    quantity: quantity,
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  //Method for selecting the image from device gallery
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-    });
-
-    if (!result.cancelled) {
-      console.log(result);
-      setImage(result.uri);
-      upload();
-    }
-  };
+ 
 
   //Method for imput validation and post data to server to insert product using API call
-  const addProductHandle = () => {
+  const addProductHandle = async () => {
     setIsloading(true);
 
     //[check validation] -- Start
@@ -167,33 +91,45 @@ const AddProductScreen = ({ navigation, route }) => {
     } else if (quantity <= 0) {
       setError("Quantity must be greater then 1");
       setIsloading(false);
-    } else if (image == null) {
-      setError("Please upload the product image");
-      setIsloading(false);
-    } else {
-      //[check validation] -- End
-      fetch(network.serverip + "/product", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result.success == true) {
-            setIsloading(false);
-            setAlertType("success");
-            setError(result.message);
-          }
-        })
-        .catch((error) => {
+    }
+    // } else if (image == null) {
+    //   setError("Please upload the product image");
+    //   setIsloading(false);
+    else {
+      const product = {
+        title: title,
+        sku : sku,
+        price : price,
+        image: "image",
+        description : description,
+        category : category,
+        quantity: quantity,
+      };
+        try {
+          await addDoc(collection(db, "product"), product);
+          setAlertType("success");
           setIsloading(false);
-          setError(error.message);
+          navigation.goBack();
+        } catch (error) {
           setAlertType("error");
-          console.log("error", error);
-        });
+          setError("Failed to add product: " + error.message);
+        }
     }
   };
-
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  }
   //call the fetch functions initial render
   useEffect(() => {
-    fetchCategories();
+    //fetchCategories();
     console.log(categories);
   }, []);
 

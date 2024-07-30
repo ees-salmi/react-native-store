@@ -2,13 +2,12 @@ import {
   StyleSheet,
   Image,
   Text,
-  TextInput,
   View,
   StatusBar,
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { colors, network } from "../../constants";
 import CustomInput from "../../components/CustomInput";
 import header_logo from "../../assets/logo/logo.png";
@@ -17,83 +16,135 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import LoginComponent from "../../components/LoginComponent/LoginComponent";
 import ProgressDialog from "react-native-progress-dialog";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
-import firebase from '@react-native-firebase/app';
-import { TouchableOpacity } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// Import the functions you need from the SDKs you need
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 
-const LoginScreen = () => {
-  // If null, no SMS has been sent
-  const [confirm, setConfirm] = useState(null);
+const firebaseConfig = {
+  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
+  authDomain: "atlas-app-f8c98.firebaseapp.com",
+  projectId: "atlas-app-f8c98",
+  storageBucket: "atlas-app-f8c98.appspot.com",
+  messagingSenderId: "173835230328",
+  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
+  measurementId: "G-FPKHGNPC1J"
+};
 
-  // Verification code (OTP - One-Time-Passcode)
-  const [code, setCode] = useState('');
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-  const [phoneNumber, setPhoneNumber] = useState('+212606060481');
-  // Handle login
-  const navigation = useNavigation();
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const signInWithPhoneNumber = async () => {
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        _storeData(user);
+        navigation.replace("tab", { user: user }); // Navigate to User Dashboard
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Method to store the authUser to async storage
+  const _storeData = async (user) => {
     try {
-      console.log(phoneNumber);
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber, true);
-      setConfirm(confirmation);
+      await AsyncStorage.setItem("authUser", JSON.stringify(user));
     } catch (error) {
-      console.log("An error occurred", error);
+      console.log(error);
+      setError(error);
     }
   };
 
-  const confirmCode = async () => {
+  const handleAuthentication = async () => {
+    setIsLoading(true);
+    //[check validation] -- Start
+    if (email === "") {
+      setIsLoading(false);
+      return setError("Please enter your email");
+    }
+    if (password === "") {
+      setIsLoading(false);
+      return setError("Please enter your password");
+    }
+    if (!email.includes("@")) {
+      setIsLoading(false);
+      return setError("Email is not valid");
+    }
+    if (email.length < 6) {
+      setIsLoading(false);
+      return setError("Email is too short");
+    }
+    if (password.length < 6) {
+      setIsLoading(false);
+      return setError("Password must be 6 characters long");
+    }
+    //[check validation] -- End
+
     try {
-      const userCredential = await confirm.confirm(code);
-      const user = userCredential.user;
-      const userDocument = await firestore()
-        .collection("user")
-        .doc(user.uid)
-        .get();
-      if (userDocument.exists) {
-        navigation.navigate("HomeScreen");
-      } else {
-        navigation.navigate("Dashboard");
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+      setUser(userCredentials.user);
+      console.log("User signed in successfully!",user);
+      _storeData(user);
+      if(userCredentials.email === "elmustaphaes.salmi@gmail.com"){
+        navigation.replace("dashboard", { authUser: user });
       }
+      else {
+        navigation.replace("addproduct", { authUser: user });
+      }
+      
     } catch (error) {
-      console.log('Invalid code.');
+      console.error("Authentication error:", error.message);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-   
-        <View>
-          {
-            !confirm ? (
-              <>
-                <Text style={{ textAlign: 'center', fontSize: 24, fontWeight: "bold" }}>
-                  Enter phone
-                </Text>
-
-                <CustomInput
-                  placeholder={"Enter phone here"}
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                />
-                <CustomButton onPress={signInWithPhoneNumber} text={"Send code"} />
-              </>
-            ) : (
-              <>
-                <Text>Enter code</Text>
-                <TextInput
-                  value={code}
-                  onChangeText={setCode}
-                  style={{ borderBottomWidth: 1, marginVertical: 10 }}
-                />
-                <TouchableOpacity onPress={confirmCode}>
-                  <Text>Confirm</Text>
-                </TouchableOpacity>
-              </>
-            )
-          }
+    <InternetConnectionAlert onChange={(connectionState) => {}}>
+      <KeyboardAvoidingView
+        style={styles.container}
+      >
+        <ScrollView style={{ flex: 1, width: "100%" }}>
+          <ProgressDialog visible={isLoading} label={"Login ..."} />
+          <StatusBar></StatusBar>
+          <View style={styles.welconeContainer}>
+            <View>
+              <Text style={styles.welcomeText}>Welcome to EasyBuy</Text>
+              <Text style={styles.welcomeParagraph}>make your ecommerce easy</Text>
+            </View>
+            <View>
+              <Image style={styles.logo} source={header_logo} />
+            </View>
+          </View>
+          <View style={styles.screenNameContainer}>
+            <Text style={styles.screenNameText}>Login</Text>
+          </View>
+          <CustomInput value={email} setValue={setEmail} placeholder="Email" />
+          <CustomInput value={password} setValue={setPassword} placeholder="Password" secureTextEntry />
+          {error ? <CustomAlert message={error} type="error" /> : null}
+        </ScrollView>
+        <View style={styles.buttomContainer}>
+          <CustomButton text={"Login"} onPress={handleAuthentication} />
         </View>
+        <View style={styles.bottomContainer}>
+          <Text>Don't have an account?</Text>
+          <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>signup</Text>
+        </View>
+      </KeyboardAvoidingView>
+    </InternetConnectionAlert>
   );
 };
 
@@ -102,7 +153,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    flexDirection: "row",
+    flexDirecion: "row",
     backgroundColor: colors.light,
     alignItems: "center",
     justifyContent: "center",
@@ -116,7 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     height: "30%",
-    // padding:15
   },
   formContainer: {
     flex: 3,
@@ -124,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     display: "flex",
     width: "100%",
-    flexDirection: "row",
+    flexDirecion: "row",
     padding: 5,
   },
   logo: {

@@ -19,8 +19,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProgressDialog from "react-native-progress-dialog";
 
 const DashboardScreen = ({ navigation, route }) => {
-  const { authUser } = route.params;
-  const [user, setUser] = useState(authUser);
+  //const { authUser } = route.params;
+  const [user, setUser] = useState("");
   const [label, setLabel] = useState("Loading...");
   const [error, setError] = useState("");
   const [isloading, setIsloading] = useState(false);
@@ -28,32 +28,18 @@ const DashboardScreen = ({ navigation, route }) => {
   const [refeshing, setRefreshing] = useState(false);
 
   //method to remove the auth user from async storage and navigate the login if token expires
-  const logout = async () => {
-    await AsyncStorage.removeItem("authUser");
-    navigation.replace("login");
-  };
+  // const logout = async () => {
+  //   await AsyncStorage.removeItem("authUser");
+  //   navigation.replace("login");
+  // };
 
-  var myHeaders = new Headers();
-  myHeaders.append("x-auth-token", authUser.token);
-
-  var requestOptions = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  };
-
-  //method the fetch the statistics from server using API call
   const fetchStats = () => {
-    fetch(`${network.serverip}/dashboard`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success == true) {
           //set the fetched data to Data state
           setData([
             {
               id: 1,
               title: "Users",
-              value: result.data?.usersCount,
+              value: "val",
               iconName: "person",
               type: "parimary",
               screenName: "viewusers",
@@ -61,7 +47,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 2,
               title: "Orders",
-              value: result.data?.ordersCount,
+              value: "vale",
               iconName: "cart",
               type: "secondary",
               screenName: "vieworder",
@@ -69,7 +55,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 3,
               title: "Products",
-              value: result.data?.productsCount,
+              value: "value",
               iconName: "md-square",
               type: "warning",
               screenName: "viewproduct",
@@ -77,28 +63,13 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 4,
               title: "Categories",
-              value: result.data?.categoriesCount,
+              value: "vale",
               iconName: "menu",
               type: "muted",
               screenName: "viewcategories",
             },
           ]);
-          setError("");
-          setIsloading(false);
-        } else {
-          console.log(result.err);
-          if (result.err == "jwt expired") {
-            logout();
-          }
-          setError(result.message);
-          setIsloading(false);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log("error", error);
-        setIsloading(false);
-      });
+       
   };
 
   //method call on Pull refresh
@@ -110,6 +81,7 @@ const DashboardScreen = ({ navigation, route }) => {
 
   //call the fetch function initial render
   useEffect(() => {
+   // AsyncStorage.setItem("authUser",authUser);
     fetchStats();
   }, []);
 
@@ -128,7 +100,7 @@ const DashboardScreen = ({ navigation, route }) => {
             <Ionicons name="log-out" size={30} color={colors.muted} />
           </TouchableOpacity>
           <View>
-            <Text style={styles.toBarText}>Dashboard</Text>
+            <Text style={styles.toBarText}>لوحة التحكم</Text>
           </View>
           <TouchableOpacity>
             <Ionicons
@@ -161,7 +133,7 @@ const DashboardScreen = ({ navigation, route }) => {
                   value={data.value}
                   type={data.type}
                   onPress={() => {
-                    navigation.navigate(data.screenName, { authUser: user });
+                    /*navigation.navigate(data.screenName, { authUser: user })*/;
                   }}
                 />
               ))}

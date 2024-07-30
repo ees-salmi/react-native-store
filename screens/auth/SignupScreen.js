@@ -9,13 +9,31 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { colors, network } from "../../constants";
+import { colors } from "../../constants";
 import CustomInput from "../../components/CustomInput";
 import header_logo from "../../assets/logo/logo.png";
-import CustomButton from "../../components/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import CustomButton from "../../components/CustomButton";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
+// Import the functions you need from the SDKs you need
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
+  authDomain: "atlas-app-f8c98.firebaseapp.com",
+  projectId: "atlas-app-f8c98",
+  storageBucket: "atlas-app-f8c98.appspot.com",
+  messagingSenderId: "173835230328",
+  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
+  measurementId: "G-FPKHGNPC1J"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -24,32 +42,16 @@ const SignupScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
+  const auth = getAuth(app);
 
-  var raw = JSON.stringify({
-    email: email,
-    password: password,
-    name: name,
-    userType: "USER",
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  //method to post the user data to server for user signup using API call
   const signUpHandle = () => {
-    if (email == "") {
+    if (email === "") {
       return setError("Please enter your email");
     }
-    if (name == "") {
+    if (name === "") {
       return setError("Please enter your name");
     }
-    if (password == "") {
+    if (password === "") {
       return setError("Please enter your password");
     }
     if (!email.includes("@")) {
@@ -58,21 +60,23 @@ const SignupScreen = ({ navigation }) => {
     if (email.length < 6) {
       return setError("Email is too short");
     }
-    if (password.length < 5) {
+    if (password.length < 6) {
       return setError("Password must be 6 characters long");
     }
-    if (password != confirmPassword) {
-      return setError("password does not match");
+    if (password !== confirmPassword) {
+      return setError("Password does not match");
     }
-    fetch(network.serverip + "/register", requestOptions) // API call
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        if (result.data["email"] == email) {
-          navigation.navigate("login");
-        }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("User registered successfully:", user);
+        navigation.navigate("login");
       })
-      .catch((error) => console.log("error", setError(error.message)));
+      .catch((error) => {
+        console.error("Registration error:", error.message);
+        setError(error.message);
+      });
   };
   return (
     <InternetConnectionAlert

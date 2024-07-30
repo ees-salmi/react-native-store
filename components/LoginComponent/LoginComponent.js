@@ -3,8 +3,9 @@ import { Button, Text, TextInput,View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 
+// login whith phone number
 function LoginComponent() {
   // If null, no SMS has been sent
   const [confirm, setConfirm] = useState(null);
