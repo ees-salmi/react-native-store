@@ -18,7 +18,7 @@ import ProgressDialog from "react-native-progress-dialog";
 import CategoryList from "../../components/CategoryList";
 import { collection, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
 import {db} from "../../config/database/databaseConfig";
-
+import firestore from "@react-native-firebase/firestore";
 
 const ViewCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
@@ -58,46 +58,43 @@ const ViewCategoryScreen = ({ navigation, route }) => {
     });
   };
   //method to delete the specific catgeory
-  const handleDelete = (id) => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", getToken(authUser));
+  const handleDelete = async (id) => {
+    
 
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-    setIsloading(true);
-    fetch(`${network.serverip}/delete-category?id=${id}`, requestOptions) // API call
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          fetchCategories();
-          setError(result.message);
-          setAlertType("success");
-        } else {
-          setError(result.message);
-          setAlertType("error");
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
-      });
+    try {
+      // await firestore()
+      // .collection("category")
+      // .doc(id)
+      // .delete()
+      // .then( ()=> Alert.alert("category supprimer"))
+      // .catch((() => Alert.alert("error")));
+
+      // //await deleteDoc(doc(db, 'product', id));
+      // console.log('category deleted successfully');
+      const productRef = doc(db, 'category', id);
+     await deleteDoc(productRef);
+      setIsloading(false);
+      
+     await fetchCategories();
+    } catch (error) {
+      console.error('Error deleting category:', error.message);
+      setIsloading(false);
+    }
+
+    setIsloading(false);
+ 
   };
 
   // method for alert
-  const showConfirmDialog = (id) => {
+  const showConfirmDialog =  (id) => {
     return Alert.alert(
       "Are your sure?",
-      "Are you sure you want to delete the category?",
+      "Are you sure you want to delete the category?"+id,
       [
         {
           text: "Yes",
-          onPress: () => {
-            handleDelete(id);
+          onPress:async () => {
+            await handleDelete(id);
           },
         },
         {
@@ -207,7 +204,7 @@ const ViewCategoryScreen = ({ navigation, route }) => {
                 handleEdit(item);
               }}
               onPressDelete={() => {
-                showConfirmDialog(item?._id);
+                showConfirmDialog(item?.id);
               }}
             />
           ))
