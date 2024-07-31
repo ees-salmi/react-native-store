@@ -17,6 +17,8 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import * as ImagePicker from "expo-image-picker";
 import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
+import {db} from "../../config/database/databaseConfig";
+import { collection, addDoc, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
 
 const AddCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params; //authUser data
@@ -27,6 +29,7 @@ const AddCategoryScreen = ({ navigation, route }) => {
   const [error, setError] = useState("");
   const [alertType, setAlertType] = useState("error");
   const [user, setUser] = useState({});
+
 
   //method to convert the authUser to json object.
   const getToken = (obj) => {
@@ -39,24 +42,10 @@ const AddCategoryScreen = ({ navigation, route }) => {
     return JSON.parse(obj).token;
   };
 
+
+
   //Method for imput validation post data to server to insert category using API call
-  const addCategoryHandle = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", authUser.token);
-    myHeaders.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({
-      title: title,
-      image: image,
-      description: description,
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
+  const addCategoryHandle = async () => {
 
     setIsloading(true);
     //[check validation] -- Start
@@ -66,30 +55,24 @@ const AddCategoryScreen = ({ navigation, route }) => {
     } else if (description == "") {
       setError("Please upload the product image");
       setIsloading(false);
-    } else if (image == null) {
-      setError("Please upload the Catergory image");
-      setIsloading(false);
+  
     } else {
-      //[check validation] -- End
-      fetch(network.serverip + "/category", requestOptions) //API call
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result.success == true) {
-            setIsloading(false);
-            setAlertType("success");
-            setError(result.message);
-            setTitle("");
-            setDescription("");
-          }
-        })
-        .catch((error) => {
+      const category = {
+        title: title,
+        description : description
+      };
+        try {
+          await addDoc(collection(db, "category"), category);
+          setAlertType("success");
           setIsloading(false);
-          setError(error.message);
+          navigation.goBack();
+        } catch (error) {
           setAlertType("error");
-          console.log("error", error);
-        });
+          setError("Failed to add product: " + error.message);
+        }
     }
+    setIsloading(false);
+     
   };
 
   return (
