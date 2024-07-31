@@ -19,7 +19,7 @@ import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -56,11 +56,7 @@ const AddProductScreen = ({ navigation, route }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
-  const [items, setItems] = useState([
-    { label: "Pending", value: "pending" },
-    { label: "Shipped", value: "shipped" },
-    { label: "Delivered", value: "delivered" },
-  ]);
+  const [items, setItems] = useState([]);
   var payload = [];
 
   //method to convert the authUser to json object.
@@ -150,10 +146,28 @@ const AddProductScreen = ({ navigation, route }) => {
     }
    // console.log(result.assets[0].uri);
   }
-  //call the fetch functions initial render
+  const fetchCategories = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categorie = [];
+      querySnapshot.forEach((doc) => {
+        categorie.push({ id: doc.id, ...doc.data() });
+      });
+
+      let categories = [];
+      categorie.map(cat => categories.push({label : ""+cat.title, value : ""+cat.title}));
+      setItems(categories);
+      
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
   useEffect(() => {
-    //fetchCategories();
-    console.log(categories);
+      fetchCategories();
   }, []);
 
   return (

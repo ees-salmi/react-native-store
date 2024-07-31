@@ -176,7 +176,7 @@ const ViewProductScreen = ({ navigation, route }) => {
                 key={index}
                 image={product.image}
                 title={product?.title}
-                category={product?.category?.title}
+                category={product?.category}
                 price={product?.price}
                 qantity={product?.sku}
                 onPressView={() => {
