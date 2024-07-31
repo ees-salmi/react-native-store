@@ -32,20 +32,6 @@ const ViewProductScreen = ({ navigation, route }) => {
   const [foundItems, setFoundItems] = useState([]);
   const [filterItem, setFilterItem] = useState("");
 
-  var myHeaders = new Headers();
-  myHeaders.append("x-auth-token", authUser.token);
-
-  var requestOptions = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  };
-
-  var ProductListRequestOptions = {
-    method: "GET",
-    redirect: "follow",
-  };
-
   //method call on pull refresh
   const handleOnRefresh = () => {
     setRefreshing(true);
@@ -57,12 +43,9 @@ const ViewProductScreen = ({ navigation, route }) => {
   const handleDelete = async (id) => {
   
     try {
-      await firestore()
-      .collection("product").doc("3gckuPRgMN10ocyojGrJ")
-      .delete()
-      .then( ()=> Alert.alert("produit supprimer"))
-      .catch((() => Alert.alert("error")));
-
+      const productRef = doc(db, 'product', id);
+     await deleteDoc(productRef);
+      setIsloading(false);
       //await deleteDoc(doc(db, 'product', id));
       console.log('Product deleted successfully');
       setIsloading(false);

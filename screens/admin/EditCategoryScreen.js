@@ -17,6 +17,8 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import * as ImagePicker from "expo-image-picker";
 import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
+import { collection, addDoc,updateDoc, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore";
+import {db} from "../../config/database/databaseConfig";
 
 const EditCategoryScreen = ({ navigation, route }) => {
   const { category, authUser } = route.params;
@@ -29,56 +31,32 @@ const EditCategoryScreen = ({ navigation, route }) => {
   const [user, setUser] = useState({});
 
   //Method to post the data to server to edit the category using API call
-  const editCategoryHandle = (id) => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", authUser.token);
-    myHeaders.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({
-      title: title,
-      image: image,
-      description: description,
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
+  const editCategoryHandle = async (id) => {
     setIsloading(true);
-    //[check validations] -- Start
     if (title == "") {
-      setError("Please enter the product title");
+      setError("Please enter the categoy title");
       setIsloading(false);
     } else if (description == "") {
-      setError("Please upload the product image");
+      setError("Please upload the category image");
       setIsloading(false);
-    } else if (image == null) {
-      setError("Please upload the Catergory image");
-      setIsloading(false);
+  
     } else {
-      //[check validations] -- End
-      fetch(`${network.serverip}/update-category?id=${id}`, requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result.success == true) {
-            setIsloading(false);
-            setAlertType("success");
-            setError(result.message);
-            setTitle(result.data.title);
-            setDescription(result.data.description);
-          }
-        })
-        .catch((error) => {
+      const category = {
+        title: title,
+        description : description
+      };
+        try {
+          const categoryRef = doc(db, "category", id);
+          await updateDoc(categoryRef, category);
+          setAlertType("success");
           setIsloading(false);
-          setError(error.message);
+          navigation.goBack();
+        } catch (error) {
           setAlertType("error");
-          console.log("error", error);
-        });
+          setError("Failed to edit product: " + error.message);
+        }
     }
+    setIsloading(false);
   };
 
   //inilize the title and description input fields on initial render
