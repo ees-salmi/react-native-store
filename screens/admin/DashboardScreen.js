@@ -17,7 +17,7 @@ import OptionList from "../../components/OptionList/OptionList";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProgressDialog from "react-native-progress-dialog";
-
+import LanguageSelector from "../../components/LanguageSelector/LanguageSelector";
 const DashboardScreen = ({ navigation, route }) => {
   //const { authUser } = route.params;
   const [user, setUser] = useState("");
@@ -38,38 +38,38 @@ const DashboardScreen = ({ navigation, route }) => {
           setData([
             {
               id: 1,
-              title: "Users",
-              value: "val",
+              title: "المستخدمين",
+              value: 5,
               iconName: "person",
-              type: "parimary",
-              screenName: "viewusers",
+              type: "أساسي",
+              screenName: "عرض_المستخدمين",
             },
             {
               id: 2,
-              title: "Orders",
-              value: "vale",
+              title: "الطلبات",
+              value: 8,
               iconName: "cart",
-              type: "secondary",
-              screenName: "vieworder",
+              type: "ثانوي",
+              screenName: "عرض_الطلبات",
             },
             {
               id: 3,
-              title: "Products",
-              value: "value",
+              title: "المنتجات",
+              value: 3,
               iconName: "md-square",
-              type: "warning",
-              screenName: "viewproduct",
+              type: "تحذير",
+              screenName: "عرض_المنتجات",
             },
             {
               id: 4,
-              title: "Categories",
-              value: "vale",
+              title: "الفئات",
+              value: 9,
               iconName: "menu",
-              type: "muted",
-              screenName: "viewcategories",
+              type: "مقفل",
+              screenName: "عرض_الفئات",
             },
           ]);
-       
+             
   };
 
   //method call on Pull refresh
@@ -100,7 +100,7 @@ const DashboardScreen = ({ navigation, route }) => {
             <Ionicons name="log-out" size={30} color={colors.muted} />
           </TouchableOpacity>
           <View>
-            <Text style={styles.toBarText}>لوحة التحكم</Text>
+            <Text style={styles.toBarText}>dashoard</Text>
           </View>
           <TouchableOpacity>
             <Ionicons

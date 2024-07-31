@@ -21,9 +21,23 @@ import { useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../config/database/databaseConfig";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+const firebaseConfig = {
+  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
+  authDomain: "atlas-app-f8c98.firebaseapp.com",
+  projectId: "atlas-app-f8c98",
+  storageBucket: "atlas-app-f8c98.appspot.com",
+  messagingSenderId: "173835230328",
+  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
+  measurementId: "G-FPKHGNPC1J"
+};
 
-
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const AddProductScreen = ({ navigation, route }) => {
   //const { authUser } = route.params;
@@ -64,6 +78,22 @@ const AddProductScreen = ({ navigation, route }) => {
  
 
   //Method for imput validation and post data to server to insert product using API call
+  const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const storageRef = ref(storage, `images/${filename}`);
+
+    try {
+      await uploadBytes(storageRef, blob);
+      const url = await getDownloadURL(storageRef);
+      return url;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
   const addProductHandle = async () => {
     setIsloading(true);
 
@@ -82,11 +112,12 @@ const AddProductScreen = ({ navigation, route }) => {
     //   setError("Please upload the product image");
     //   setIsloading(false);
     else {
+      const imageUrl = await uploadImage(image);
       const product = {
         title: title,
         sku : sku,
         price : price,
-        image: "image",
+        image: imageUrl,
         description : description,
         category : category,
         quantity: quantity,
@@ -103,6 +134,11 @@ const AddProductScreen = ({ navigation, route }) => {
     }
   };
   const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -110,8 +146,9 @@ const AddProductScreen = ({ navigation, route }) => {
       quality: 1,
     });
     if (!result.cancelled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri);
     }
+   // console.log(result.assets[0].uri);
   }
   //call the fetch functions initial render
   useEffect(() => {

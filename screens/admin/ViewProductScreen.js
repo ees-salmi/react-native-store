@@ -16,6 +16,8 @@ import ProductList from "../../components/ProductList/ProductList";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
+import {db} from "../../config/database/databaseConfig";
+import { collection, getDocs } from "firebase/firestore"; 
 
 const ViewProductScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
@@ -94,26 +96,23 @@ const ViewProductScreen = ({ navigation, route }) => {
   };
 
   //method the fetch the product data from server using API call
-  const fetchProduct = () => {
+  const fetchProduct = async () => {
     setIsloading(true);
-    fetch(`${network.serverip}/products`, ProductListRequestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setProducts(result.data);
-          setFoundItems(result.data);
-          setError("");
-          setIsloading(false);
-        } else {
-          setError(result.message);
-          setIsloading(false);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log("error", error);
-        setIsloading(false);
+    try {
+      const querySnapshot = await getDocs(collection(db, "product"));
+      const products = [];
+      querySnapshot.forEach((doc) => {
+        products.push({ id: doc.id, ...doc.data() });
       });
+      setProducts(products);
+      setFoundItems(products);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
   };
 
   //method to filer the orders for by title [search bar]
