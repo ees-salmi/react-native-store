@@ -17,7 +17,8 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
 import {db} from "../../config/database/databaseConfig";
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
+import firestore from "@react-native-firebase/firestore";
 
 const ViewProductScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
@@ -53,34 +54,33 @@ const ViewProductScreen = ({ navigation, route }) => {
   };
 
   //method to delete the specific order
-  const handleDelete = (id) => {
-    setIsloading(true);
-    console.log(`${network.serverip}/delete-product?id=${id}`);
-    fetch(`${network.serverip}/delete-product?id=${id}`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          fetchProduct();
-          setError(result.message);
-          setAlertType("success");
-        } else {
-          setError(result.message);
-          setAlertType("error");
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
-      });
+  const handleDelete = async (id) => {
+  
+    try {
+      await firestore()
+      .collection("product").doc("3gckuPRgMN10ocyojGrJ")
+      .delete()
+      .then( ()=> Alert.alert("produit supprimer"))
+      .catch((() => Alert.alert("error")));
+
+      //await deleteDoc(doc(db, 'product', id));
+      console.log('Product deleted successfully');
+      setIsloading(false);
+      
+     await fetchProduct();
+    } catch (error) {
+      console.error('Error deleting product:', error.message);
+      setIsloading(false);
+    }
+
+    setIsloading(false);
   };
 
   //method for alert
   const showConfirmDialog = (id) => {
     return Alert.alert(
       "Are your sure?",
-      "Are you sure you want to delete the category?",
+      "Are you sure you want to delete the category?"+id,
       [
         {
           text: "Yes",
@@ -191,7 +191,7 @@ const ViewProductScreen = ({ navigation, route }) => {
             return (
               <ProductList
                 key={index}
-                image={`${network.serverip}/uploads/${product?.image}`}
+                image={product.image}
                 title={product?.title}
                 category={product?.category?.title}
                 price={product?.price}
@@ -206,7 +206,7 @@ const ViewProductScreen = ({ navigation, route }) => {
                   });
                 }}
                 onPressDelete={() => {
-                  showConfirmDialog(product._id);
+                  showConfirmDialog(product.id);
                 }}
               />
             );
