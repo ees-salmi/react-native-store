@@ -16,6 +16,9 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
 import CategoryList from "../../components/CategoryList";
+import { collection, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
+import {db} from "../../config/database/databaseConfig";
+
 
 const ViewCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
@@ -105,35 +108,23 @@ const ViewCategoryScreen = ({ navigation, route }) => {
   };
 
   //method the fetch the catgeories from server using API call
-  const fetchCategories = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", getToken(authUser));
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
+  const fetchCategories = async () => {
     setIsloading(true);
-    fetch(`${network.serverip}/categories`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setCategories(result.categories);
-          setFoundItems(result.categories);
-          setError("");
-        } else {
-          setError(result.message);
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categorie = [];
+      querySnapshot.forEach((doc) => {
+        categorie.push({ id: doc.id, ...doc.data() });
       });
+      setCategories(categorie);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
   };
-
   //method to filer the product for by title [search bar]
   const filter = () => {
     const keyword = filterItem;
