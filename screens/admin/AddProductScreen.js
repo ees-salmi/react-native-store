@@ -36,6 +36,7 @@ const AddProductScreen = ({ navigation, route }) => {
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
   const [alertType, setAlertType] = useState("error");
   const [user, setUser] = useState({});
   const [categories, setCategories] = useState([]);
@@ -89,6 +90,8 @@ const AddProductScreen = ({ navigation, route }) => {
     } else if (quantity <= 0) {
       setError("Quantity must be greater then 1");
       setIsloading(false);
+    } else if (brand == ""){
+      setError("specify the brand")
     }
     // } else if (image == null) {
     //   setError("Please upload the product image");
@@ -102,6 +105,7 @@ const AddProductScreen = ({ navigation, route }) => {
         image: imageUrl,
         description : description,
         category : category,
+        brand : brand ,
         quantity: quantity,
       };
         try {
@@ -237,6 +241,13 @@ const AddProductScreen = ({ navigation, route }) => {
             value={description}
             setValue={setDescription}
             placeholder={"Description"}
+            placeholderTextColor={colors.muted}
+            radius={5}
+          />
+          <CustomInput
+            value={brand}
+            setValue={setBrand}
+            placeholder={"brand"}
             placeholderTextColor={colors.muted}
             radius={5}
           />
