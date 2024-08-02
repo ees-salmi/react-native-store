@@ -14,6 +14,7 @@ import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import cartIcon from "../../assets/icons/cart_beg.png";
 import emptyBox from "../../assets/image/emptybox.png";
+import ProgressDialog from "react-native-progress-dialog";
 import { colors, network } from "../../constants";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -21,20 +22,21 @@ import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
 import CustomIconButton from "../../components/CustomIconButton/CustomIconButton";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import CustomInput from "../../components/CustomInput";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
+import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore"; 
 import {db} from "../../config/database/databaseConfig";
 
 const CategoriesScreen = ({ navigation, route }) => {
-  const { categoryID } = route.params;
-
-  const [isLoading, setLoading] = useState(true);
+  const { categoryName } = route.params;
+  const categoryID = "32343";
+  const [isloading, setIsloading] = useState(true);
   const [products, setProducts] = useState([]);
   const [refeshing, setRefreshing] = useState(false);
-  const [label, setLabel] = useState("Loading...");
+  const [label, setLabel] = useState("جاري التحميل ...");
   const [error, setError] = useState("");
   const [foundItems, setFoundItems] = useState([]);
   const [filterItem, setFilterItem] = useState("");
   const [category, setCategory] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(category[0]);
 
   //get the dimenssions of active window
   const [windowWidth, setWindowWidth] = useState(
@@ -65,34 +67,9 @@ const CategoriesScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-  var headerOptions = {
-    method: "GET",
-    redirect: "follow",
-  };
-  //  let category = [
-  //   {
-  //     _id: "62fe244f58f7aa8230817f89",
-  //     title: "Garments",
-  //     image: require("../../assets/icons/garments.png"),
-  //   },
-  //   {
-  //     _id: "62fe243858f7aa8230817f86",
-  //     title: "Electornics",
-  //     image: require("../../assets/icons/electronics.png"),
-  //   },
-  //   {
-  //     _id: "62fe241958f7aa8230817f83",
-  //     title: "Cosmentics",
-  //     image: require("../../assets/icons/cosmetics.png"),
-  //   },
-  //   {
-  //     _id: "62fe246858f7aa8230817f8c",
-  //     title: "Groceries",
-  //     image: require("../../assets/icons/grocery.png"),
-  //   },
-  // ];
-  const [selectedTab, setSelectedTab] = useState(category[0]);
+ 
   const fetchCategories = async () => {
+    setIsloading(true);
   
     try {
       const querySnapshot = await getDocs(collection(db, "category"));
@@ -103,6 +80,32 @@ const CategoriesScreen = ({ navigation, route }) => {
       setCategory(categorie);
       console.log(categorie);
       setError("");
+      setIsloading(false);
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+      setIsloading(false);
+    }finally {
+      setIsloading(false);
+    }
+  };
+
+  const fetchProductsByCategory = async (categoryName) => {
+    setIsloading(true);
+    try {
+      const productsQuerySnapshot = await getDocs(
+        query(collection(db, "product"), where("category", "==", categoryName))
+      );
+      const products = [];
+      productsQuerySnapshot.forEach((doc) => {
+        products.push({ id: doc.id, ...doc.data() });
+      });
+      setProducts(products);
+      setFoundItems(products);
+      setFilterItem(products);
+      console.log(products);
+      setIsloading(false);
+      setError("");
     } catch (error) {
       setError(error.message);
       console.log("error", error);
@@ -110,6 +113,7 @@ const CategoriesScreen = ({ navigation, route }) => {
       setIsloading(false);
     }
   };
+  
   //method to fetch the product from server using API call
   const fetchProduct = () => {
     
@@ -136,20 +140,36 @@ const CategoriesScreen = ({ navigation, route }) => {
     }
   };
 
+  const refresh = async () => {
+    setIsloading(true);
+    try {
+      await fetchData();
+      setIsloading(false);
+    } catch {
+      setIsloading(false);
+    } finally {
+      setIsloading(false);
+    }
+    
+    setIsloading(false);
+  }
   //render whenever the value of filterItem change
   // useEffect(() => {
   //   filter();
   // }, [filterItem]);
-
+  const fetchData = async () => {
+      await fetchCategories();
+      await fetchProductsByCategory(selectedTab.title);
+  }
   //fetch the product on initial render
-  useEffect(async () => {
-    await fetchCategories();
-    fetchProduct();
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (
     <View style={styles.container}>
       <StatusBar></StatusBar>
+      <ProgressDialog visible={isloading} label={label} />
       <View style={styles.topBarContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -165,7 +185,7 @@ const CategoriesScreen = ({ navigation, route }) => {
 
         <View>
         <TouchableOpacity
-          onPress={async ()=> { await fetchCategories()}}
+          onPress={async ()=> { await refresh()}}
         >
           <Ionicons
             name="refresh"
@@ -243,9 +263,7 @@ const CategoriesScreen = ({ navigation, route }) => {
           </View>
         ) : (
           <FlatList
-            data={foundItems.filter(
-              (product) => product?.category?._id === selectedTab?._id
-            )}
+            data={foundItems}
             refreshControl={
               <RefreshControl
                 refreshing={refeshing}

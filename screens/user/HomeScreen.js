@@ -29,17 +29,17 @@ import { collection, getDocs } from "firebase/firestore";
 const category = [
   {
     _id: "62fe244f58f7aa8230817f89",
-    title: "Garments",
+    title: "Boisson",
     image: require("../../assets/icons/garments.png"),
   },
   {
     _id: "62fe243858f7aa8230817f86",
-    title: "Electornics",
+    title: "Electornic",
     image: require("../../assets/icons/electronics.png"),
   },
   {
     _id: "62fe241958f7aa8230817f83",
-    title: "Cosmentics",
+    title: "Petit lait",
     image: require("../../assets/icons/cosmetics.png"),
   },
   {
@@ -99,6 +99,7 @@ const HomeScreen = ({ navigation, route }) => {
       setProducts(products);
       setFoundItems(products);
       setError("");
+      setIsloading(false);
     } catch (error) {
       setError(error.message);
       console.log("error", error);
@@ -118,6 +119,7 @@ const HomeScreen = ({ navigation, route }) => {
       console.log(categorie);
       //setCategory(categorie);
       setError("");
+      setIsloading(false);
     } catch (error) {
       setError(error.message);
       console.log("error", error);
@@ -243,7 +245,7 @@ const HomeScreen = ({ navigation, route }) => {
                     text={item.title}
                     image={item.image}
                     onPress={() =>
-                      navigation.jumpTo("categories", { categoryID: item })
+                      navigation.jumpTo("categories", { categoryName: item.title })
                     }
                   />
                 </View>
