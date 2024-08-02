@@ -12,13 +12,13 @@ const Splash = ({ navigation }) => {
       const value = await AsyncStorage.getItem("authUser");
       if (value !== null) {
         let user = JSON.parse(value); // covert the authUser value to json
-        if (user.userType === "ADMIN") {
+        if (user.email === "meryamelmouhi@gmail.com") {
           setTimeout(() => {
-            navigation.replace("dashboard", { authUser: JSON.parse(value) }); // navigate to Admin dashboard
+            navigation.replace("homeScreen", { authUser: JSON.parse(value) }); // navigate to Admin dashboard
           }, 2000);
         } else {
           setTimeout(() => {
-            navigation.replace("tab", { user: JSON.parse(value) }); // navigate to User Home screen
+            navigation.replace("dashboard", { user: JSON.parse(value) }); // navigate to User Home screen
           }, 2000);
         }
       } else {

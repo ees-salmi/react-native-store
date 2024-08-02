@@ -23,6 +23,8 @@ import { bindActionCreators } from "redux";
 import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
 import SearchableDropdown from "react-native-searchable-dropdown";
 import { SliderBox } from "react-native-image-slider-box";
+import {db} from "../../config/database/databaseConfig";
+import { collection, getDocs } from "firebase/firestore"; 
 
 const category = [
   {
@@ -64,7 +66,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [error, setError] = useState("");
   const [userInfo, setUserInfo] = useState({});
   const [searchItems, setSearchItems] = useState([]);
-
+  //const [category, setCategory ] = useState([]);
   //method to convert the authUser to json object
   const convertToJSON = (obj) => {
     try {
@@ -84,44 +86,57 @@ const HomeScreen = ({ navigation, route }) => {
     addCartItem(product);
   };
 
-  var headerOptions = {
-    method: "GET",
-    redirect: "follow",
-  };
 
-  const fetchProduct = () => {
-    fetch(`${network.serverip}/products`, headerOptions) //API call
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setProducts(result.data);
-          setError("");
-          let payload = [];
-          result.data.forEach((cat, index) => {
-            let searchableItem = { ...cat, id: ++index, name: cat.title };
-            payload.push(searchableItem);
-          });
-          setSearchItems(payload);
-        } else {
-          setError(result.message);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log("error", error);
+
+  const fetchProduct = async () => {
+    setIsloading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "product"));
+      const products = [];
+      querySnapshot.forEach((doc) => {
+        products.push({ id: doc.id, ...doc.data() });
       });
+      setProducts(products);
+      setFoundItems(products);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
   };
+  }
 
+  const fetchCategories = async () => {
+    setIsloading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categorie = [];
+      querySnapshot.forEach((doc) => {
+        categorie.push({ id: doc.id, ...doc.data() });
+      });
+      console.log(categorie);
+      //setCategory(categorie);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
   //method call on pull refresh
   const handleOnRefresh = () => {
     setRefreshing(true);
     fetchProduct();
     setRefreshing(false);
+    fetchCategories();
   };
 
   //convert user to json and fetch products in initial render
   useEffect(() => {
     convertToJSON(user);
+    fetchCategories();
     fetchProduct();
   }, []);
 
@@ -258,7 +273,7 @@ const HomeScreen = ({ navigation, route }) => {
                 initialNumToRender={5}
                 horizontal={true}
                 data={products.slice(0, 4)}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
                   <View
                     key={item._id}
@@ -266,7 +281,7 @@ const HomeScreen = ({ navigation, route }) => {
                   >
                     <ProductCard
                       name={item.title}
-                      image={`${network.serverip}/uploads/${item.image}`}
+                      image={item.image}
                       price={item.price}
                       quantity={item.quantity}
                       onPress={() => handleProductPress(item)}

@@ -95,13 +95,13 @@ const LoginScreen = ({ navigation }) => {
     try {
       const userCredentials = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredentials.user);
-      console.log("User signed in successfully!",user);
+      console.log("User signed in successfully!",JSON.stringify(userCredentials.user.email));
       _storeData(user);
-      if(userCredentials.email === "elmustaphaes.salmi@gmail.com"){
-        navigation.replace("dashboard", { authUser: user });
+      if(userCredentials.user.email === "elmustaphaes.salmi@gmail.com"){
+        navigation.replace("dashboard", { authUser: userCredentials.user });
       }
       else {
-        navigation.replace("addproduct", { authUser: user });
+        navigation.replace("homeScreen", { authUser: userCredentials.user });
       }
       
     } catch (error) {

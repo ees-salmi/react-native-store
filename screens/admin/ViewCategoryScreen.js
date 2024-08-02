@@ -16,9 +16,8 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
 import CategoryList from "../../components/CategoryList";
-import { collection, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
 import {db} from "../../config/database/databaseConfig";
-import firestore from "@react-native-firebase/firestore";
 
 const ViewCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params;

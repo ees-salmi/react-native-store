@@ -32,7 +32,7 @@ const Routes = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="dashboard"
+        initialRouteName="login"
         screenOptions={{ headerShown: false }}
       >
         

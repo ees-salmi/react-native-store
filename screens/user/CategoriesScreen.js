@@ -21,6 +21,8 @@ import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
 import CustomIconButton from "../../components/CustomIconButton/CustomIconButton";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import CustomInput from "../../components/CustomInput";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
+import {db} from "../../config/database/databaseConfig";
 
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryID } = route.params;
@@ -32,6 +34,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   const [error, setError] = useState("");
   const [foundItems, setFoundItems] = useState([]);
   const [filterItem, setFilterItem] = useState("");
+  const [category, setCategory] = useState([]);
 
   //get the dimenssions of active window
   const [windowWidth, setWindowWidth] = useState(
@@ -66,51 +69,50 @@ const CategoriesScreen = ({ navigation, route }) => {
     method: "GET",
     redirect: "follow",
   };
-  const category = [
-    {
-      _id: "62fe244f58f7aa8230817f89",
-      title: "Garments",
-      image: require("../../assets/icons/garments.png"),
-    },
-    {
-      _id: "62fe243858f7aa8230817f86",
-      title: "Electornics",
-      image: require("../../assets/icons/electronics.png"),
-    },
-    {
-      _id: "62fe241958f7aa8230817f83",
-      title: "Cosmentics",
-      image: require("../../assets/icons/cosmetics.png"),
-    },
-    {
-      _id: "62fe246858f7aa8230817f8c",
-      title: "Groceries",
-      image: require("../../assets/icons/grocery.png"),
-    },
-  ];
+  //  let category = [
+  //   {
+  //     _id: "62fe244f58f7aa8230817f89",
+  //     title: "Garments",
+  //     image: require("../../assets/icons/garments.png"),
+  //   },
+  //   {
+  //     _id: "62fe243858f7aa8230817f86",
+  //     title: "Electornics",
+  //     image: require("../../assets/icons/electronics.png"),
+  //   },
+  //   {
+  //     _id: "62fe241958f7aa8230817f83",
+  //     title: "Cosmentics",
+  //     image: require("../../assets/icons/cosmetics.png"),
+  //   },
+  //   {
+  //     _id: "62fe246858f7aa8230817f8c",
+  //     title: "Groceries",
+  //     image: require("../../assets/icons/grocery.png"),
+  //   },
+  // ];
   const [selectedTab, setSelectedTab] = useState(category[0]);
-
+  const fetchCategories = async () => {
+  
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categorie = [];
+      querySnapshot.forEach((doc) => {
+        categorie.push({ id: doc.id, ...doc.data() });
+      });
+      setCategory(categorie);
+      console.log(categorie);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
   //method to fetch the product from server using API call
   const fetchProduct = () => {
-    var headerOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-    fetch(`${network.serverip}/products`, headerOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setProducts(result.data);
-          setFoundItems(result.data);
-          setError("");
-        } else {
-          setError(result.message);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log("error", error);
-      });
+    
   };
 
   //listener call on tab focus and initlize categoryID
@@ -135,12 +137,13 @@ const CategoriesScreen = ({ navigation, route }) => {
   };
 
   //render whenever the value of filterItem change
-  useEffect(() => {
-    filter();
-  }, [filterItem]);
+  // useEffect(() => {
+  //   filter();
+  // }, [filterItem]);
 
   //fetch the product on initial render
-  useEffect(() => {
+  useEffect(async () => {
+    await fetchCategories();
     fetchProduct();
   }, []);
 
@@ -160,7 +163,17 @@ const CategoriesScreen = ({ navigation, route }) => {
           />
         </TouchableOpacity>
 
-        <View></View>
+        <View>
+        <TouchableOpacity
+          onPress={async ()=> { await fetchCategories()}}
+        >
+          <Ionicons
+            name="refresh"
+            size={30}
+            color={colors.muted}
+          />
+        </TouchableOpacity>
+        </View>
         <TouchableOpacity
           style={styles.cartIconContainer}
           onPress={() => navigation.navigate("cart")}
@@ -252,7 +265,7 @@ const CategoriesScreen = ({ navigation, route }) => {
                 <ProductCard
                   cardSize={"large"}
                   name={product.title}
-                  image={`${network.serverip}/uploads/${product.image}`}
+                  image={product.image}
                   price={product.price}
                   quantity={product.quantity}
                   onPress={() => handleProductPress(product)}
