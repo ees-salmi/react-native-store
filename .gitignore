@@ -150,3 +150,5 @@ docs/pages/versions/*/react-native/*.diff
 /ios/Pods
 /ios/build
 **/ios/.xcode.env.local
+# config db
+./config/databaseConfig

@@ -215,6 +215,7 @@ const CategoriesScreen = ({ navigation, route }) => {
             placeholder={"Search..."}
             value={filterItem}
             setValue={setFilterItem}
+            onChange={() => filterProducts()} // impmeting filering
           />
         </View>
         <FlatList

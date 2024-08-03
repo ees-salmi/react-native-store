@@ -116,6 +116,7 @@ const AddProductScreen = ({ navigation, route }) => {
         } catch (error) {
           setAlertType("error");
           setError("Failed to add product: " + error.message);
+          setIsloading(false);
         }
     }
   };

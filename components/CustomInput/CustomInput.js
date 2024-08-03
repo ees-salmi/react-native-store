@@ -13,12 +13,14 @@ const CustomInput = ({
   width = "100%",
   keyboardType,
   maxLength,
+  onChange,
 }) => {
   return (
     <View style={{ width: width }}>
       <TextInput
         placeholder={placeholder}
         onChangeText={setValue}
+        onChange={onChange}
         value={value}
         secureTextEntry={secureTextEntry}
         style={styles.CustomInput}
