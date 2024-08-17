@@ -141,7 +141,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
         <View style={styles.bottomContainer}>
           <Text>Don't have an account?</Text>
-          <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>signup</Text>
+          <Text onPress={() => navigation.navigate("confirmlocation")} style={styles.signupText}>signup</Text>
         </View>
       </KeyboardAvoidingView>
     </InternetConnectionAlert>
