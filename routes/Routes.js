@@ -26,6 +26,7 @@ import CategoriesScreen from "../screens/user/CategoriesScreen";
 import EditCategoryScreen from "../screens/admin/EditCategoryScreen";
 import MyWishlistScreen from "../screens/profile/MyWishlistScreen";
 import ConfirmLocation from "../screens/auth/ConfirmLocation";
+import SendOtp from "../screens/auth/SendOtp";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,13 +34,14 @@ const Routes = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="dashboard"
+        initialRouteName="login"
         screenOptions={{ headerShown: false }}
       >
         
         <Stack.Screen name="splash" component={Splash} />
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="signup" component={SignupScreen} />
+        <Stack.Screen name="sendotp" component={SendOtp} />
         <Stack.Screen name="confirmlocation" component={ConfirmLocation} />
         <Stack.Screen name="forgetpassword" component={ForgetPasswordScreen} />
         <Stack.Screen name="updatepassword" component={UpdatePasswordScreen} />
