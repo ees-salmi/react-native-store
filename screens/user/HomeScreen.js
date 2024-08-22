@@ -23,8 +23,14 @@ import { bindActionCreators } from "redux";
 import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
 import SearchableDropdown from "react-native-searchable-dropdown";
 import { SliderBox } from "react-native-image-slider-box";
-import {db} from "../../config/database/databaseConfig";
 import { collection, getDocs } from "firebase/firestore"; 
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const category = [
   {

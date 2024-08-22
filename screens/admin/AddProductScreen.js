@@ -23,7 +23,11 @@ import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {db, storage} from "../../config/database/databaseConfig";
+import firebaseConfig from "../../config";
+
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const AddProductScreen = ({ navigation, route }) => {
   //const { authUser } = route.params;

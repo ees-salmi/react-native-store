@@ -23,7 +23,13 @@ import CustomIconButton from "../../components/CustomIconButton/CustomIconButton
 import ProductCard from "../../components/ProductCard/ProductCard";
 import CustomInput from "../../components/CustomInput";
 import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore"; 
-import {db} from "../../config/database/databaseConfig";
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryName } = route.params;

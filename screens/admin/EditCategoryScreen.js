@@ -18,7 +18,13 @@ import * as ImagePicker from "expo-image-picker";
 import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
 import { collection, addDoc,updateDoc, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore";
-import {db} from "../../config/database/databaseConfig";
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const EditCategoryScreen = ({ navigation, route }) => {
   const { category, authUser } = route.params;

@@ -17,8 +17,14 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import * as ImagePicker from "expo-image-picker";
 import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
-import {db} from "../../config/database/databaseConfig";
 import { collection, addDoc, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const AddCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params; //authUser data

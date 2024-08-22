@@ -16,9 +16,15 @@ import ProductList from "../../components/ProductList/ProductList";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
-import {db} from "../../config/database/databaseConfig";
 import { collection, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
 import firestore from "@react-native-firebase/firestore";
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const ViewProductScreen = ({ navigation, route }) => {
   const { authUser } = route.params;

@@ -17,7 +17,13 @@ import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
 import CategoryList from "../../components/CategoryList";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
-import {db} from "../../config/database/databaseConfig";
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const ViewCategoryScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
