@@ -18,6 +18,7 @@ import { colors } from "../../constants";
 import CustomIconButton from "../../components/CustomIconButton/CustomIconButton";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import { network } from "../../constants";
+import ProgressDialog from "react-native-progress-dialog";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
@@ -28,6 +29,7 @@ import firebaseConfig from "../../config";
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+import CategoryCard from "../../components/CategoryCard";
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -67,9 +69,11 @@ const HomeScreen = ({ navigation, route }) => {
   const { addCartItem } = bindActionCreators(actionCreaters, dispatch);
 
   const { user } = route.params;
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [refeshing, setRefreshing] = useState(false);
+  const [label, setLabel] = useState("جاري التحميل ...");
   const [error, setError] = useState("");
+  const [isloading, setIsloading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [searchItems, setSearchItems] = useState([]);
   //const [category, setCategory ] = useState([]);
@@ -87,13 +91,29 @@ const HomeScreen = ({ navigation, route }) => {
     navigation.navigate("productdetail", { product: product });
   };
 
+  const handleCategoryPress = (product) => {
+    navigation.navigate("categories", { category: category });
+  };
+
   //method to add to cart (redux)
   const handleAddToCat = (product) => {
     addCartItem(product);
   };
 
 
-
+  const refresh = async () => {
+    setIsloading(true);
+    try {
+      await fetchCategories();
+      setIsloading(false);
+    } catch {
+      setIsloading(false);
+    } finally {
+      setIsloading(false);
+    }
+    
+    setIsloading(false);
+  }
   const fetchProduct = async () => {
     setIsloading(true);
     try {
@@ -122,8 +142,8 @@ const HomeScreen = ({ navigation, route }) => {
       querySnapshot.forEach((doc) => {
         categorie.push({ id: doc.id, ...doc.data() });
       });
-      console.log(categorie);
-      //setCategory(categorie);
+      console.log("categ home sc ", categorie);
+      setCategories(categorie);
       setError("");
       setIsloading(false);
     } catch (error) {
@@ -151,6 +171,7 @@ const HomeScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <StatusBar></StatusBar>
+      <ProgressDialog visible={isloading} label={label} />
       <View style={styles.topBarContainer}>
         <TouchableOpacity disabled>
           <Ionicons name="menu" size={30} color={colors.muted} />
@@ -158,6 +179,17 @@ const HomeScreen = ({ navigation, route }) => {
         <View style={styles.topbarlogoContainer}>
           <Image source={easybuylogo} style={styles.logo} />
           <Text style={styles.toBarText}>EasyBuy</Text>
+        </View>
+        <View>
+        <TouchableOpacity
+          onPress={async ()=> { await refresh()}}
+        >
+          <Ionicons
+            name="refresh"
+            size={30}
+            color={colors.muted}
+          />
+        </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={styles.cartIconContainer}
@@ -262,7 +294,7 @@ const HomeScreen = ({ navigation, route }) => {
           <View style={styles.primaryTextContainer}>
             <Text style={styles.primaryText}>New Arrivals</Text>
           </View>
-          {products.length === 0 ? (
+          {categories.length === 0 ? (
             <View style={styles.productCardContainerEmpty}>
               <Text style={styles.productCardContainerEmptyText}>
                 No Product
@@ -280,20 +312,19 @@ const HomeScreen = ({ navigation, route }) => {
                 showsHorizontalScrollIndicator={false}
                 initialNumToRender={5}
                 horizontal={true}
-                data={products.slice(0, 4)}
+                data={categories}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
                   <View
-                    key={item._id}
+                    key={item.id}
                     style={{ marginLeft: 5, marginBottom: 10, marginRight: 5 }}
                   >
-                    <ProductCard
+                    <CategoryCard
                       name={item.title}
                       image={item.image}
-                      price={item.price}
-                      quantity={item.quantity}
-                      onPress={() => handleProductPress(item)}
-                      onPressSecondary={() => handleAddToCat(item)}
+                      onPress={() =>
+                        navigation.jumpTo("categories", { categoryName: item.title })
+                      }
                     />
                   </View>
                 )}

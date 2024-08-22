@@ -34,7 +34,7 @@ const db = getFirestore(app);
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryName } = route.params;
   const categoryID = "32343";
-  const [isloading, setIsloading] = useState(true);
+  const [isloading, setIsloading] = useState(false);
   const [products, setProducts] = useState([]);
   const [refeshing, setRefreshing] = useState(false);
   const [label, setLabel] = useState("جاري التحميل ...");
@@ -84,7 +84,7 @@ const CategoriesScreen = ({ navigation, route }) => {
         categorie.push({ id: doc.id, ...doc.data() });
       });
       setCategory(categorie);
-      console.log(categorie);
+      console.log("categories: ", categorie);
       setError("");
       setIsloading(false);
     } catch (error) {

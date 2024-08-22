@@ -85,8 +85,8 @@ const LoginScreen = ({ navigation }) => {
     try {
       const userCredentials = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredentials.user);
-      console.log("User signed in successfully!",userCredentials);
-      _storeData(user);
+      console.log("User signed in successfully!",userCredentials.user);
+      _storeData(userCredentials.user);
       if(userCredentials.user.email === "elmustaphaes.salmi@gmail.com"){
         navigation.replace("dashboard", { authUser: userCredentials.user });
       }
