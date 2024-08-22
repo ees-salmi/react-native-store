@@ -21,17 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
-  authDomain: "atlas-app-f8c98.firebaseapp.com",
-  projectId: "atlas-app-f8c98",
-  storageBucket: "atlas-app-f8c98.appspot.com",
-  messagingSenderId: "173835230328",
-  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
-  measurementId: "G-FPKHGNPC1J"
-};
-
+import firebaseConfig from "../../config";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -95,7 +85,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       const userCredentials = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredentials.user);
-      console.log("User signed in successfully!",user);
+      console.log("User signed in successfully!",userCredentials);
       _storeData(user);
       if(userCredentials.email === "elmustaphaes.salmi@gmail.com"){
         navigation.replace("dashboard", { authUser: user });

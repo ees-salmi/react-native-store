@@ -9,11 +9,20 @@ import {
   Linking,
   Text,
 } from 'react-native';
-
+import axios from 'axios';
 const App = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState('');
 
+  const sendOtp = () => {
+    axios.get('http://localhost:3000/test', { phoneNumber })
+      .then(response => {
+        setMessage('OTP sent successfully!!');
+      })
+      .catch(error => {
+        setMessage(`Error: ${error.message}`);
+      });
+  };
   const sendWhatsApp = () => {
     if (phoneNumber.length === 0) {
       Alert.alert('Error', 'Please insert mobile number');
@@ -57,7 +66,7 @@ const App = () => {
         onChangeText={setMessage}
       />
 
-      <Button title="Send WhatsApp Message" onPress={sendWhatsApp} />
+      <Button title="Send WhatsApp Message" onPress={sendOtp} />
     </View>
   );
 };
