@@ -17,25 +17,38 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import * as ImagePicker from "expo-image-picker";
 import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
-import { collection, addDoc, getDocs, deleteDoc, doc, Firestore } from "firebase/firestore"; 
-import firebaseConfig from "../../config";
-import { getStorage} from "firebase/storage";
-import { getFirestore } from "firebase/firestore";
+import { useEffect } from "react";
+import DropDownPicker from "react-native-dropdown-picker";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import firebaseConfig from "../../config";
+
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
 
-const AddCategoryScreen = ({ navigation, route }) => {
-  const { authUser } = route.params; //authUser data
+const AddProductScreen = ({ navigation, route }) => {
+  //const { authUser } = route.params;
   const [isloading, setIsloading] = useState(false);
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState("easybuycat.png");
-  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [sku, setSku] = useState("");
+  const [image, setImage] = useState("");
   const [error, setError] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
   const [alertType, setAlertType] = useState("error");
   const [user, setUser] = useState({});
-
+  const [categories, setCategories] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [statusDisable, setStatusDisable] = useState(false);
+  const [items, setItems] = useState([]);
+  var payload = [];
 
   //method to convert the authUser to json object.
   const getToken = (obj) => {
@@ -48,38 +61,93 @@ const AddCategoryScreen = ({ navigation, route }) => {
     return JSON.parse(obj).token;
   };
 
+  //Method : Fetch category data from using API call and store for later you in code
+ 
 
+  //Method for imput validation and post data to server to insert product using API call
+  const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const storageRef = ref(storage, `images/${filename}`);
 
-  //Method for imput validation post data to server to insert category using API call
-  const addCategoryHandle = async () => {
+    try {
+      await uploadBytes(storageRef, blob);
+      const url = await getDownloadURL(storageRef);
+      return url;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
 
+  const addProductHandle = async () => {
     setIsloading(true);
+
     //[check validation] -- Start
     if (title == "") {
       setError("Please enter the product title");
       setIsloading(false);
-    } else if (description == "") {
-      setError("Please upload the product image");
-      setIsloading(false);
-  
-    } else {
-      const category = {
+    } 
+    else {
+      const imageUrl = await uploadImage(image);
+      const product = {
         title: title,
-        description : description
+        image: imageUrl,
+        description : description,
       };
         try {
-          await addDoc(collection(db, "category"), category);
+          await addDoc(collection(db, "category"), product);
           setAlertType("success");
           setIsloading(false);
           navigation.goBack();
         } catch (error) {
           setAlertType("error");
           setError("Failed to add product: " + error.message);
+          setIsloading(false);
         }
     }
-    setIsloading(false);
-     
   };
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result.assets[0].uri);
+    }
+   // console.log(result.assets[0].uri);
+  }
+  const fetchCategories = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categorie = [];
+      querySnapshot.forEach((doc) => {
+        categorie.push({ id: doc.id, ...doc.data() });
+      });
+
+      let categories = [];
+      categorie.map(cat => categories.push({label : ""+cat.title, value : ""+cat.title}));
+      setItems(categories);
+      
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
+  useEffect(() => {
+      fetchCategories();
+  }, []);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -101,7 +169,7 @@ const AddCategoryScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>Add Category</Text>
+          <Text style={styles.screenNameText}>Add category</Text>
         </View>
         <View>
           <Text style={styles.screenNameParagraph}>Add category details</Text>
@@ -113,6 +181,20 @@ const AddCategoryScreen = ({ navigation, route }) => {
         style={{ flex: 1, width: "100%" }}
       >
         <View style={styles.formContainer}>
+          <View style={styles.imageContainer}>
+            {image ? (
+              <TouchableOpacity style={styles.imageHolder} onPress={pickImage}>
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: 200, height: 200 }}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.imageHolder} onPress={pickImage}>
+                <AntDesign name="pluscircle" size={50} color={colors.muted} />
+              </TouchableOpacity>
+            )}
+          </View>
           <CustomInput
             value={title}
             setValue={setTitle}
@@ -120,7 +202,6 @@ const AddCategoryScreen = ({ navigation, route }) => {
             placeholderTextColor={colors.muted}
             radius={5}
           />
-
           <CustomInput
             value={description}
             setValue={setDescription}
@@ -130,15 +211,15 @@ const AddCategoryScreen = ({ navigation, route }) => {
           />
         </View>
       </ScrollView>
-
+      
       <View style={styles.buttomContainer}>
-        <CustomButton text={"Add Category"} onPress={addCategoryHandle} />
+        <CustomButton text={"Add Product"} onPress={addProductHandle} />
       </View>
     </KeyboardAvoidingView>
   );
 };
 
-export default AddCategoryScreen;
+export default AddProductScreen;
 
 const styles = StyleSheet.create({
   container: {
