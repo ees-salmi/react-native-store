@@ -1,25 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { colors } from "../../constants";
-import garmentsIcon from "../../assets/icons/garments.png";
+import garmentsIcon from "../../assets/adaptive-icon.png";
 
 const CustomIconButton = ({image, onPress, active }) => {
   return (
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: active ? colors.primary_light : colors.white },
+        { backgroundColor: active ? colors.success : colors.white },
       ]}
       onPress={onPress}
     >
-      <Image source={image} style={styles.buttonIcon} />
-      <Text
-        style={[
-          styles.buttonText,
-          { color: active ? colors.dark : colors.muted },
-        ]}
-      >
-      </Text>
+      <Image source={{ uri: image }} style={styles.buttonIcon} />
+      
     </TouchableOpacity>
   );
 };
@@ -45,8 +39,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonIcon: {
-    height: 20,
-    width: 35,
+    height: "90%",
+    width: "90%",
+    borderRadius : 40,
     resizeMode: "contain",
   },
 });

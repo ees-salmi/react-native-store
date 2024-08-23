@@ -43,6 +43,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   const [foundItems, setFoundItems] = useState([]);
   const [filterItem, setFilterItem] = useState("");
   const [category, setCategory] = useState([]);
+  const [brand, setBrand] = useState([]);
   const [selectedTab, setSelectedTab] = useState(category[0]);
 
   //get the dimenssions of active window
@@ -101,7 +102,7 @@ const CategoriesScreen = ({ navigation, route }) => {
     setIsloading(true);
     try {
       const productsQuerySnapshot = await getDocs(
-        query(collection(db, "product"), where("category", "==", categoryN))
+        query(collection(db, "product"), where("category", "==", categoryName))
       );
       const products = [];
       productsQuerySnapshot.forEach((doc) => {
@@ -110,7 +111,7 @@ const CategoriesScreen = ({ navigation, route }) => {
       setProducts(products);
       setFoundItems(products);
       setFilterItem(products);
-      console.log(products);
+      console.log("found items :",foundItems);
       setIsloading(false);
       setError("");
     } catch (error) {
@@ -133,12 +134,36 @@ const CategoriesScreen = ({ navigation, route }) => {
     }
   });
 
+  const fetchProductsByBrand = async () => {
+    setIsloading(true);
+    try {
+      const productsQuerySnapshot = await getDocs(
+        query(collection(db, "product"), where("brand", "==", brand))
+      );
+      const products = [];
+      productsQuerySnapshot.forEach((doc) => {
+        products.push({ id: doc.id, ...doc.data() });
+      });
+      setProducts(products);
+      setFoundItems(products);
+      setFilterItem(products);
+      console.log("found items :",foundItems);
+      setIsloading(false);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
+
   //method to filter the product according to user search in selected category
   const filter = () => {
     const keyword = filterItem;
     if (keyword !== "") {
       const results = products.filter((product) => {
-        return product?.title.toLowerCase().includes(keyword.toLowerCase());
+        return product?.title.includes(keyword);
       });
 
       setFoundItems(results);
@@ -222,11 +247,11 @@ const CategoriesScreen = ({ navigation, route }) => {
             placeholder={"Search..."}
             value={filterItem}
             setValue={setFilterItem}
-            onChange={() => filterProducts()} // impmeting filering
+            onChange={() => filter()} // impmeting filering
           />
         </View>
         <FlatList
-          data={category}
+          data={products}
           keyExtractor={(index, item) => `${index}-${item}`}
           horizontal
           style={{ flexGrow: 0 }}
@@ -245,7 +270,7 @@ const CategoriesScreen = ({ navigation, route }) => {
           )}
         />
 
-        {foundItems.filter(
+        {products.filter(
           (product) => product?.category?._id === selectedTab?._id
         ).length === 0 ? (
           <View style={styles.noItemContainer}>
