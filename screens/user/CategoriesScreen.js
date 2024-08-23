@@ -33,6 +33,7 @@ const db = getFirestore(app);
 
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryName } = route.params;
+  const [categoyN, setCategoryN] = useState(categoryName);
   const categoryID = "32343";
   const [isloading, setIsloading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -96,11 +97,11 @@ const CategoriesScreen = ({ navigation, route }) => {
     }
   };
 
-  const fetchProductsByCategory = async (categoryName) => {
+  const fetchProductsByCategory = async () => {
     setIsloading(true);
     try {
       const productsQuerySnapshot = await getDocs(
-        query(collection(db, "product"), where("category", "==", categoryName))
+        query(collection(db, "product"), where("category", "==", categoryN))
       );
       const products = [];
       productsQuerySnapshot.forEach((doc) => {
@@ -165,7 +166,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   // }, [filterItem]);
   const fetchData = async () => {
       await fetchCategories();
-      await fetchProductsByCategory(selectedTab.title);
+      await fetchProductsByCategory(categoryName);
   }
   //fetch the product on initial render
   useEffect(() => {

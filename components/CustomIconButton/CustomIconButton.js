@@ -3,7 +3,7 @@ import React from "react";
 import { colors } from "../../constants";
 import garmentsIcon from "../../assets/icons/garments.png";
 
-const CustomIconButton = ({ text, image, onPress, active }) => {
+const CustomIconButton = ({image, onPress, active }) => {
   return (
     <TouchableOpacity
       style={[
@@ -19,7 +19,6 @@ const CustomIconButton = ({ text, image, onPress, active }) => {
           { color: active ? colors.dark : colors.muted },
         ]}
       >
-        {text}
       </Text>
     </TouchableOpacity>
   );
@@ -34,9 +33,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.white,
-    borderRadius: 10,
-    height: 40,
-    width: 110,
+    borderRadius: 40,
+    height: 70,
+    width: 70,
     elevation: 3,
     margin: 5,
   },
