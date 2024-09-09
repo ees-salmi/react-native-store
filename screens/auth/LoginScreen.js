@@ -87,11 +87,12 @@ const LoginScreen = ({ navigation }) => {
       setUser(userCredentials.user);
       console.log("User signed in successfully!",userCredentials.user);
       _storeData(userCredentials.user);
+      console.log(userCredentials.user.email);
       if(userCredentials.user.email === "elmustaphaes.salmi@gmail.com"){
         navigation.replace("dashboard", { authUser: userCredentials.user });
       }
       else {
-        navigation.replace("homeScreen", { authUser: userCredentials.user });
+        navigation.replace("dashboard", { authUser: userCredentials.user });
       }
       
     } catch (error) {

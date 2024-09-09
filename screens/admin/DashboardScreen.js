@@ -149,7 +149,7 @@ const DashboardScreen = ({ navigation, route }) => {
             <OptionList
               text={"Products"}
               Icon={Ionicons}
-              iconName={"md-square"}
+              iconName={"box"}
               onPress={() =>
                 navigation.navigate("viewproduct", { authUser: user })
               }
@@ -167,6 +167,18 @@ const DashboardScreen = ({ navigation, route }) => {
               }
               onPressSecondary={() =>
                 navigation.navigate("addcategories", { authUser: user })
+              }
+              type="morden"
+            />
+            <OptionList
+              text={"Brands"}
+              Icon={Ionicons}
+              iconName={"filter"}
+              onPress={() =>
+                navigation.navigate("viewbrands", { authUser: user })
+              }
+              onPressSecondary={() =>
+                navigation.navigate("addbrands", { authUser: user })
               }
               type="morden"
             />
