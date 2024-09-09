@@ -97,7 +97,7 @@ import {
           description : description,
         };
           try {
-            await addDoc(collection(db, "brands"), brand);
+            await addDoc(collection(db, "brand"), brand);
             setAlertType("success");
             setIsloading(false);
             navigation.goBack();
@@ -127,7 +127,7 @@ import {
     }
     const fetchBrands = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "brands"));
+        const querySnapshot = await getDocs(collection(db, "brand"));
         const brands = [];
         querySnapshot.forEach((doc) => {
           brands.push({ id: doc.id, ...doc.data() });
@@ -219,7 +219,7 @@ import {
     );
   };
   
-  export default AddProductScreen;
+  export default AddBrandScreen;
   
   const styles = StyleSheet.create({
     container: {

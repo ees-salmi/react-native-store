@@ -175,10 +175,10 @@ const DashboardScreen = ({ navigation, route }) => {
               Icon={Ionicons}
               iconName={"filter"}
               onPress={() =>
-                navigation.navigate("viewbrands", { authUser: user })
+                navigation.navigate("viewbrandscreen", { authUser: user })
               }
               onPressSecondary={() =>
-                navigation.navigate("addbrands", { authUser: user })
+                navigation.navigate("addbrandscreen", { authUser: user })
               }
               type="morden"
             />
