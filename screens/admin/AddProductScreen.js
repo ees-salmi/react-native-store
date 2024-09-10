@@ -48,6 +48,7 @@ const AddProductScreen = ({ navigation, route }) => {
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
   const [items, setItems] = useState([]);
+  const [brandes, setBrandes] = useState([]);
   var payload = [];
 
   //method to convert the authUser to json object.
@@ -61,10 +62,6 @@ const AddProductScreen = ({ navigation, route }) => {
     return JSON.parse(obj).token;
   };
 
-  //Method : Fetch category data from using API call and store for later you in code
- 
-
-  //Method for imput validation and post data to server to insert product using API call
   const uploadImage = async (uri) => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -161,8 +158,29 @@ const AddProductScreen = ({ navigation, route }) => {
       setIsloading(false);
     }
   };
+  const fetchBrands = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "brand"));
+      const brands = [];
+      querySnapshot.forEach((doc) => {
+        brands.push({ id: doc.id, ...doc.data() });
+      });
+
+      let brandes = [];
+      brands.map(cat => brandes.push({label : ""+cat.title, value : ""+cat.title}));
+      setBrandes(brandes);
+      
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+    } finally {
+      setIsloading(false);
+    }
+  };
   useEffect(() => {
       fetchCategories();
+      fetchBrands();
   }, []);
 
   return (
@@ -249,31 +267,41 @@ const AddProductScreen = ({ navigation, route }) => {
             placeholderTextColor={colors.muted}
             radius={5}
           />
-          <CustomInput
+          <DropDownPicker
+            placeholder={"Select brand "}
+            open={open}
             value={brand}
+            items={brandes}
+            setOpen={setOpen}
             setValue={setBrand}
-            placeholder={"brand"}
-            placeholderTextColor={colors.muted}
-            radius={5}
+            setItems={setBrandes}
+            disabled={statusDisable}
+            disabledStyle={{
+              backgroundColor: colors.light,
+              borderColor: colors.white,
+            }}
+            labelStyle={{ color: colors.muted }}
+            style={{ borderColor: "#fff", elevation: 5 }}
           />
         </View>
-      </ScrollView>
-      <DropDownPicker
-        placeholder={"Select Product Category"}
-        open={open}
-        value={category}
-        items={items}
-        setOpen={setOpen}
-        setValue={setCategory}
-        setItems={setItems}
-        disabled={statusDisable}
-        disabledStyle={{
-          backgroundColor: colors.light,
-          borderColor: colors.white,
-        }}
-        labelStyle={{ color: colors.muted }}
-        style={{ borderColor: "#fff", elevation: 5 }}
-      />
+     
+          <DropDownPicker
+            placeholder={"Select  Category"}
+            open={open}
+            value={category}
+            items={items}
+            setOpen={setOpen}
+            setValue={setCategory}
+            setItems={setItems}
+            disabled={statusDisable}
+            disabledStyle={{
+              backgroundColor: colors.light,
+              borderColor: colors.white,
+            }}
+            labelStyle={{ color: colors.muted }}
+            style={{ borderColor: "#fff", elevation: 5 }}
+          />
+       </ScrollView>
       <View style={styles.buttomContainer}>
         <CustomButton text={"Add Product"} onPress={addProductHandle} />
       </View>

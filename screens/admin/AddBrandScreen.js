@@ -134,7 +134,7 @@ import {
         });
   
         let categories = [];
-        categorie.map(cat => categories.push({label : ""+cat.title, value : ""+cat.title}));
+        brands.map(cat => categories.push({label : ""+cat.title, value : ""+cat.title}));
         setItems(categories);
         
         setError("");

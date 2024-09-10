@@ -36,11 +36,11 @@ const Routes = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="dashboard"
+        initialRouteName="login"
         screenOptions={{ headerShown: false }}
       >
         
-        <Stack.Screen name="splash" component={Splash} />
+        
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="signup" component={SignupScreen} />
         <Stack.Screen name="sendotp" component={SendOtp} />

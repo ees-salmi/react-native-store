@@ -62,116 +62,99 @@ const slides = [
   require("../../assets/image/banners/banner.png"),
 ];
 
+const DEFAULT_IMAGE_URL = "../../assets/icons/grocery.png"; // Default image URL
+
 const HomeScreen = ({ navigation, route }) => {
   const cartproduct = useSelector((state) => state.product);
   const dispatch = useDispatch();
-
   const { addCartItem } = bindActionCreators(actionCreaters, dispatch);
-
   const { user } = route.params;
+
   const [categories, setCategories] = useState([]);
-  const [refeshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [label, setLabel] = useState("جاري التحميل ...");
   const [error, setError] = useState("");
-  const [isloading, setIsloading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [searchItems, setSearchItems] = useState([]);
-  //const [category, setCategory ] = useState([]);
-  //method to convert the authUser to json object
+
   const convertToJSON = (obj) => {
     try {
       setUserInfo(JSON.parse(obj));
-    } catch (e) {
+    } catch {
       setUserInfo(obj);
     }
   };
 
-  //method to navigate to product detail screen of a specific product
   const handleProductPress = (product) => {
-    navigation.navigate("productdetail", { product: product });
+    navigation.navigate("productdetail", { product });
   };
 
-  const handleCategoryPress = (product) => {
-    navigation.navigate("categories", { category: category });
+  const handleCategoryPress = (category) => {
+    navigation.navigate("categories", { category });
   };
 
-  //method to add to cart (redux)
-  const handleAddToCat = (product) => {
+  const handleAddToCart = (product) => {
     addCartItem(product);
   };
 
-
   const refresh = async () => {
-    setIsloading(true);
+    setIsLoading(true);
     try {
       await fetchCategories();
-      setIsloading(false);
-    } catch {
-      setIsloading(false);
+      await fetchProducts(); // Assuming you also want to refresh products
+    } catch (error) {
+      setError(error.message);
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
-    
-    setIsloading(false);
-  }
-  const fetchProduct = async () => {
-    setIsloading(true);
+  };
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
     try {
       const querySnapshot = await getDocs(collection(db, "product"));
-      const products = [];
-      querySnapshot.forEach((doc) => {
-        products.push({ id: doc.id, ...doc.data() });
-      });
+      const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Assuming you have `setProducts` and `setFoundItems` methods
       setProducts(products);
       setFoundItems(products);
-      setError("");
-      setIsloading(false);
     } catch (error) {
       setError(error.message);
-      console.log("error", error);
     } finally {
-      setIsloading(false);
-  };
-  }
-
-  const fetchCategories = async () => {
-    setIsloading(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, "category"));
-      const categorie = [];
-      querySnapshot.forEach((doc) => {
-        categorie.push({ id: doc.id, ...doc.data() });
-      });
-      console.log("categ home sc ", categorie);
-      setCategories(categorie);
-      setError("");
-      setIsloading(false);
-    } catch (error) {
-      setError(error.message);
-      console.log("error", error);
-    } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
   };
-  //method call on pull refresh
-  const handleOnRefresh = () => {
-    setRefreshing(true);
-    fetchProduct();
-    setRefreshing(false);
-    fetchCategories();
+
+  const fetchCategories = async () => {
+    setIsLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "category"));
+      const categories = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCategories(categories);
+      console.log(categories);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  //convert user to json and fetch products in initial render
+  const handleOnRefresh = () => {
+    setRefreshing(true);
+    refresh();
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     convertToJSON(user);
     fetchCategories();
-    fetchProduct();
-  }, []);
+    fetchProducts();
+  }, [user]);
 
   return (
     <View style={styles.container}>
-      <StatusBar></StatusBar>
-      <ProgressDialog visible={isloading} label={label} />
+      <StatusBar />
+      <ProgressDialog visible={isLoading} label={label} />
       <View style={styles.topBarContainer}>
         <TouchableOpacity disabled>
           <Ionicons name="menu" size={30} color={colors.muted} />
@@ -180,27 +163,17 @@ const HomeScreen = ({ navigation, route }) => {
           <Image source={easybuylogo} style={styles.logo} />
           <Text style={styles.toBarText}>EasyBuy</Text>
         </View>
-        <View>
-        <TouchableOpacity
-          onPress={async ()=> { await refresh()}}
-        >
-          <Ionicons
-            name="refresh"
-            size={30}
-            color={colors.muted}
-          />
+        <TouchableOpacity onPress={refresh}>
+          <Ionicons name="refresh" size={30} color={colors.muted} />
         </TouchableOpacity>
-        </View>
         <TouchableOpacity
           style={styles.cartIconContainer}
           onPress={() => navigation.navigate("cart")}
         >
-          {cartproduct.length > 0 ? (
+          {cartproduct.length > 0 && (
             <View style={styles.cartItemCountContainer}>
               <Text style={styles.cartItemCountText}>{cartproduct.length}</Text>
             </View>
-          ) : (
-            <></>
           )}
           <Image source={cartIcon} />
         </TouchableOpacity>
@@ -210,55 +183,30 @@ const HomeScreen = ({ navigation, route }) => {
           <View style={styles.inputContainer}>
             <SearchableDropdown
               onTextChange={(text) => console.log(text)}
-              onItemSelect={(item) => handleProductPress(item)}
+              onItemSelect={handleProductPress}
               defaultIndex={0}
-              containerStyle={{
-                borderRadius: 5,
-                width: "100%",
-                elevation: 5,
-                position: "absolute",
-                zIndex: 20,
-                top: -20,
-                maxHeight: 300,
-                backgroundColor: colors.light,
-              }}
-              textInputStyle={{
-                borderRadius: 10,
-                padding: 6,
-                paddingLeft: 10,
-                borderWidth: 0,
-                backgroundColor: colors.white,
-              }}
-              itemStyle={{
-                padding: 10,
-                marginTop: 2,
-                backgroundColor: colors.white,
-                borderColor: colors.muted,
-              }}
-              itemTextStyle={{
-                color: colors.muted,
-              }}
-              itemsContainerStyle={{
-                maxHeight: "100%",
-              }}
+              containerStyle={styles.searchDropdownContainer}
+              textInputStyle={styles.searchDropdownInput}
+              itemStyle={styles.searchDropdownItem}
+              itemTextStyle={styles.searchDropdownItemText}
+              itemsContainerStyle={styles.searchDropdownItemsContainer}
               items={searchItems}
               placeholder="Search..."
               resetValue={false}
               underlineColorAndroid="transparent"
             />
-            {/* <CustomInput radius={5} placeholder={"Search...."} /> */}
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.scanButton}>
               <Text style={styles.scanButtonText}>Scan</Text>
-              <Image source={scanIcon} style={{ width: 20, height: 20 }} />
+              <Image source={scanIcon} style={styles.scanButtonIcon} />
             </TouchableOpacity>
           </View>
         </View>
-        <ScrollView nestedScrollEnabled={true}>
+        <ScrollView nestedScrollEnabled>
           <View style={styles.promotiomSliderContainer}>
             <SliderBox
-              images={slides}
+              images={slides.length ? slides : [DEFAULT_IMAGE_URL]}
               sliderBoxHeight={140}
               dotColor={colors.primary}
               inactiveDotColor={colors.muted}
@@ -273,63 +221,51 @@ const HomeScreen = ({ navigation, route }) => {
             <FlatList
               showsHorizontalScrollIndicator={false}
               style={styles.flatListContainer}
-              horizontal={true}
-              data={category}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              renderItem={({ item, index }) => (
-                <View style={{ marginBottom: 10 }} key={index}>
+              horizontal
+              data={categories}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.categoryItemContainer}>
                   <CustomIconButton
-                    key={index}
                     text={item.title}
-                    image={item.image}
-                    onPress={() =>
-                      navigation.jumpTo("categories", { categoryName: item.title })
-                    }
+                    image={item.image ? item.image : DEFAULT_IMAGE_URL}
+                    onPress={() => handleCategoryPress(item.title)}
                   />
                 </View>
               )}
             />
-            <View style={styles.emptyView}></View>
           </View>
           <View style={styles.primaryTextContainer}>
             <Text style={styles.primaryText}>New Arrivals</Text>
           </View>
           {categories.length === 0 ? (
             <View style={styles.productCardContainerEmpty}>
-              <Text style={styles.productCardContainerEmptyText}>
-                No Product
-              </Text>
+              <Text style={styles.productCardContainerEmptyText}>No Product</Text>
             </View>
           ) : (
             <View style={styles.productCardContainer}>
               <FlatList
                 refreshControl={
                   <RefreshControl
-                    refreshing={refeshing}
+                    refreshing={refreshing}
                     onRefresh={handleOnRefresh}
                   />
                 }
                 showsHorizontalScrollIndicator={false}
                 initialNumToRender={5}
-                horizontal={true}
+                horizontal
                 data={categories}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item, index }) => (
-                  <View
-                    key={item.id}
-                    style={{ marginLeft: 5, marginBottom: 10, marginRight: 5 }}
-                  >
+                renderItem={({ item }) => (
+                  <View style={styles.productCardContainerItem}>
                     <CategoryCard
                       name={item.title}
-                      image={item.image}
-                      onPress={() =>
-                        navigation.jumpTo("categories", { categoryName: item.title })
-                      }
+                      image={item.image ? item.image : DEFAULT_IMAGE_URL}
+                      onPress={() => handleCategoryPress(item.title)}
                     />
                   </View>
                 )}
               />
-              <View style={styles.emptyView}></View>
             </View>
           )}
         </ScrollView>

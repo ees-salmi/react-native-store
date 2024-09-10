@@ -56,7 +56,7 @@ const DashboardScreen = ({ navigation, route }) => {
               id: 3,
               title: "المنتجات",
               value: 3,
-              iconName: "md-square",
+              iconName: "laptop",
               type: "تحذير",
               screenName: "عرض_المنتجات",
             },
@@ -149,7 +149,7 @@ const DashboardScreen = ({ navigation, route }) => {
             <OptionList
               text={"Products"}
               Icon={Ionicons}
-              iconName={"box"}
+              iconName={"laptop"}
               onPress={() =>
                 navigation.navigate("viewproduct", { authUser: user })
               }
@@ -178,7 +178,7 @@ const DashboardScreen = ({ navigation, route }) => {
                 navigation.navigate("viewbrandscreen", { authUser: user })
               }
               onPressSecondary={() =>
-                navigation.navigate("addbrandscreen", { authUser: user })
+                navigation.navigate("viewbrandscreen", { authUser: user })
               }
               type="morden"
             />
