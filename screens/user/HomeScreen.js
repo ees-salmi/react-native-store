@@ -30,9 +30,11 @@ import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import CategoryCard from "../../components/CategoryCard";
+import CategorySearchDropdown from "../../components/categorySearchDropDown/CategorySearchDropdown ";
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
+
 
 const category = [
   {
@@ -181,19 +183,7 @@ const HomeScreen = ({ navigation, route }) => {
       <View style={styles.bodyContainer}>
         <View style={styles.searchContainer}>
           <View style={styles.inputContainer}>
-            <SearchableDropdown
-              onTextChange={(text) => console.log(text)}
-              onItemSelect={handleProductPress}
-              defaultIndex={0}
-              containerStyle={styles.searchDropdownContainer}
-              textInputStyle={styles.searchDropdownInput}
-              itemStyle={styles.searchDropdownItem}
-              itemTextStyle={styles.searchDropdownItemText}
-              itemsContainerStyle={styles.searchDropdownItemsContainer}
-              items={searchItems}
-              placeholder="Search..."
-              resetValue={false}
-              underlineColorAndroid="transparent"
+            <CategorySearchDropdown
             />
           </View>
           <View style={styles.buttonContainer}>

@@ -50,7 +50,7 @@ const Tabs = ({ navigation, route }) => {
               <TouchableOpacity disabled>
                 {focused == true ? (
                   <Ionicons
-                    name="searsh"
+                    name="laptop"
                     size={29}
                     color={colors.primary}
                   />
