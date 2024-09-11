@@ -217,57 +217,25 @@ const HomeScreen = ({ navigation, route }) => {
           <View style={styles.primaryTextContainer}>
             <Text style={styles.primaryText}>Categories</Text>
           </View>
-          <View style={styles.categoryContainer}>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              style={styles.flatListContainer}
-              horizontal
-              data={categories}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.categoryItemContainer}>
-                  <CustomIconButton
-                    text={item.title}
-                    image={item.image ? item.image : DEFAULT_IMAGE_URL}
-                    onPress={() => handleCategoryPress(item.title)}
-                  />
-                </View>
-              )}
-            />
-          </View>
-          <View style={styles.primaryTextContainer}>
-            <Text style={styles.primaryText}>New Arrivals</Text>
-          </View>
+          <View style={styles.cardContainer}>
           {categories.length === 0 ? (
             <View style={styles.productCardContainerEmpty}>
               <Text style={styles.productCardContainerEmptyText}>No Product</Text>
             </View>
           ) : (
-            <View style={styles.productCardContainer}>
-              <FlatList
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={handleOnRefresh}
-                  />
-                }
-                showsHorizontalScrollIndicator={false}
-                initialNumToRender={5}
-                horizontal
-                data={categories}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <View style={styles.productCardContainerItem}>
+            
+              categories.map( item => 
+                <View key={item.id} style={styles.productCardContainerItem}>
                     <CategoryCard
                       name={item.title}
                       image={item.image ? item.image : DEFAULT_IMAGE_URL}
                       onPress={() => handleCategoryPress(item.title)}
                     />
                   </View>
-                )}
-              />
-            </View>
+              )
           )}
+          </View>
+          
         </ScrollView>
       </View>
     </View>
@@ -369,8 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
     width: "100%",
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 5,
   },
   primaryText: {
     fontSize: 20,
@@ -447,5 +414,15 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: "bold",
     fontSize: 10,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap', // This ensures multiple rows if necessary
+    justifyContent: 'space-between', // Adjust space between the items
+    paddingHorizontal: 10,
+  },
+  productCardContainerItem: {
+    width: '48%', // Adjust width to ensure two cards fit in one row
+    marginBottom: 10, // Add some margin for spacing between rows
   },
 });

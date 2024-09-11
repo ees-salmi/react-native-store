@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     elevation: 5,
+    margin:5,
   },
   imageContainer: {
     backgroundColor: colors.light,
