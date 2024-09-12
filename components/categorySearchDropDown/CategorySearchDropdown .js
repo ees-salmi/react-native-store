@@ -49,6 +49,7 @@ const CategorySearchDropdown = () => {
       item.title.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredCategories(filtered);
+    
   };
 
   if (isLoading) {
@@ -85,15 +86,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   searchDropdownInput: {
-    padding: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
+    padding: 15,
+    borderColor: '#000', // Bold black border
+    borderWidth: 2,      // Bold border width
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000', // Add shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,  
     width:250,
     height:45,
   },
   searchDropdownItem: {
-    padding: 10,
+    padding: 3,
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
   },

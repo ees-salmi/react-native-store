@@ -101,8 +101,9 @@ const CategoriesScreen = ({ navigation, route }) => {
   const fetchProductsByCategory = async () => {
     setIsloading(true);
     try {
+      const cn = categoryName ? categoryName : categoyN ;
       const productsQuerySnapshot = await getDocs(
-        query(collection(db, "product"), where("category", "==", categoryName))
+        query(collection(db, "product"), where("category", "==", "Boisson"))
       );
       const products = [];
       productsQuerySnapshot.forEach((doc) => {
@@ -132,9 +133,15 @@ const CategoriesScreen = ({ navigation, route }) => {
     if (categoryID) {
       setSelectedTab(categoryID);
     }
+    
   });
 
-  const fetchProductsByBrand = async () => {
+  const filterProductsByBrand = (selectedBrand) => {
+    const filtered = products.filter(product => product.brand === selectedBrand.title);
+    setFoundItems(filtered);
+  };
+
+ /* const fetchProductsByBrand = async () => {
     setIsloading(true);
     try {
       const productsQuerySnapshot = await getDocs(
@@ -154,6 +161,26 @@ const CategoriesScreen = ({ navigation, route }) => {
       setError(error.message);
       console.log("error", error);
     } finally {
+      setIsloading(false);
+    }
+  };*/
+
+  const fetchBrands = async () => {
+    setIsloading(true);
+  
+    try {
+      const querySnapshot = await getDocs(collection(db, "brand"));
+      const brands = [];
+      querySnapshot.forEach((doc) => {
+        brands.push({ id: doc.id, ...doc.data() });
+      });
+      setBrand(brands);
+      setIsloading(false);
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+      setIsloading(false);
+    }finally {
       setIsloading(false);
     }
   };
@@ -192,6 +219,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   const fetchData = async () => {
       await fetchCategories();
       await fetchProductsByCategory(categoryName);
+      await fetchBrands();
   }
   //fetch the product on initial render
   useEffect(() => {
@@ -251,7 +279,7 @@ const CategoriesScreen = ({ navigation, route }) => {
           />
         </View>
         <FlatList
-          data={products}
+          data={brand}
           keyExtractor={(index, item) => `${index}-${item}`}
           horizontal
           style={{ flexGrow: 0 }}
@@ -265,6 +293,7 @@ const CategoriesScreen = ({ navigation, route }) => {
               active={selectedTab?.title === tab.title ? true : false}
               onPress={() => {
                 setSelectedTab(tab);
+                filterProductsByBrand(tab);
               }}
             />
           )}
