@@ -7,6 +7,7 @@ import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import firebaseConfig from "../../config";
 import { useNavigation } from "@react-navigation/native";
+import ArabicText from '../ArabicText/ArabicText';
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -60,6 +61,8 @@ const CategorySearchDropdown = () => {
     return <Text>Error: {error}</Text>;
   }
 
+  const placeholder =  <ArabicText text={'بحث عن الفئات '} ></ArabicText>
+
   return (
     <SearchableDropdown
       onTextChange={handleSearchTextChange}
@@ -74,7 +77,7 @@ const CategorySearchDropdown = () => {
         id: category.id,
         name: category.title
       }))}
-      placeholder="Search Categories..."
+      placeholder="بحث عن الفئات"
       resetValue={false}
       underlineColorAndroid="transparent"
     />

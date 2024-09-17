@@ -31,6 +31,7 @@ import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import CategoryCard from "../../components/CategoryCard";
 import CategorySearchDropdown from "../../components/categorySearchDropDown/CategorySearchDropdown ";
+import ArabicText from '../../components/ArabicText/ArabicText';
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -153,6 +154,8 @@ const HomeScreen = ({ navigation, route }) => {
     fetchProducts();
   }, [user]);
 
+ 
+
   return (
     <View style={styles.container}>
       <StatusBar />
@@ -163,7 +166,7 @@ const HomeScreen = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={styles.topbarlogoContainer}>
           <Image source={easybuylogo} style={styles.logo} />
-          <Text style={styles.toBarText}>EasyBuy</Text>
+          <ArabicText text={'هوتة شوب'} ></ArabicText>
         </View>
         <TouchableOpacity onPress={refresh}>
           <Ionicons name="refresh" size={30} color={colors.muted} />
