@@ -21,6 +21,7 @@ import firebaseConfig from "../../config";
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+import ArabicText from '../../components/ArabicText/ArabicText';
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -167,7 +168,7 @@ const ProductDetailScreen = ({ navigation, route }) => {
         <View style={styles.productInfoContainer}>
           <View style={styles.productInfoTopContainer}>
             <View style={styles.productNameContaier}>
-              <Text style={styles.productNameText}>{product?.title}</Text>
+              <ArabicText fsize={17}  text={product?.title} style={styles.productNameText}></ArabicText>
             </View>
             <View style={styles.infoButtonContainer}>
               <View style={styles.wishlistButtonContainer}>
@@ -189,12 +190,12 @@ const ProductDetailScreen = ({ navigation, route }) => {
                 {/* <Text style={styles.secondaryTextSm}>Size:</Text> */}
               </View>
               <View style={styles.productPriceContainer}>
-                <Text style={styles.secondaryTextSm}>Price:</Text>
+                <ArabicText text={'الثمن'} style={styles.secondaryTextSm} />
                 <Text style={styles.primaryTextSm}>{product?.price} dh</Text>
               </View>
             </View>
             <View style={styles.productDescriptionContainer}>
-              <Text style={styles.secondaryTextSm}>Description:</Text>
+              <ArabicText text={'وصف'} style={styles.secondaryTextSm} />
               <Text>{product?.description}</Text>
             </View>
           </View>
@@ -223,7 +224,7 @@ const ProductDetailScreen = ({ navigation, route }) => {
             <View style={styles.productButtonContainer}>
               {availableQuantity > 0 ? (
                 <CustomButton
-                  text={"Add to Cart"}
+                  text={"إضافة إلى السلة"}
                   onPress={() => {
                     addCartItem(product);
                   }}
@@ -291,8 +292,9 @@ const styles = StyleSheet.create({
     elevation: 25,
   },
   productImage: {
-    height: 300,
+    height: 250,
     width: 300,
+    borderRadius:6,
     resizeMode: "contain",
   },
   productInfoTopContainer: {
@@ -332,12 +334,13 @@ const styles = StyleSheet.create({
   },
   productNameContaier: {
     padding: 5,
-    paddingLeft: 20,
+    paddingLeft: 30,
+    paddingRight : 30,
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: "end",
+    justifyContent: "flex-end",
   },
   productNameText: {
     fontSize: 20,
