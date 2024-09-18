@@ -94,7 +94,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const handleCategoryPress = (category) => {
-    navigation.navigate("categories", { category });
+    navigation.navigate("categories", { "categoryName" :category });
   };
 
   const handleAddToCart = (product) => {
@@ -208,7 +208,7 @@ const HomeScreen = ({ navigation, route }) => {
             />
           </View>
           <View style={styles.primaryTextContainer}>
-            <Text style={styles.primaryText}>Categories</Text>
+             <ArabicText fsize={25}  text={'  الفئات '} ></ArabicText>
           </View>
           <View style={styles.cardContainer}>
           {categories.length === 0 ? (
@@ -327,8 +327,8 @@ const styles = StyleSheet.create({
     padding: 20,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     width: "100%",
     paddingTop: 5,
   },

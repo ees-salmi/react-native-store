@@ -33,7 +33,7 @@ const db = getFirestore(app);
 
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryName } = route.params;
-  const [categoyN, setCategoryN] = useState(categoryName);
+  const [categoryNam, setCategoryNam] = useState(categoryName);
   const categoryID = "32343";
   const [isloading, setIsloading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -101,9 +101,9 @@ const CategoriesScreen = ({ navigation, route }) => {
   const fetchProductsByCategory = async () => {
     setIsloading(true);
     try {
-      const cn = categoryName ? categoryName : categoyN ;
+      //const cn = categoryName ? categoryName : categoyN ;
       const productsQuerySnapshot = await getDocs(
-        query(collection(db, "product"), where("category", "==", "Boisson"))
+        query(collection(db, "product"), where("category", "==", categoryName))
       );
       const products = [];
       productsQuerySnapshot.forEach((doc) => {
@@ -221,9 +221,17 @@ const CategoriesScreen = ({ navigation, route }) => {
       await fetchProductsByCategory(categoryName);
       await fetchBrands();
   }
+  const clearAndJump = () => {
+    setCategoryNam("");
+    navigation.jumpTo("home");
+
+  }
   //fetch the product on initial render
   useEffect(() => {
     fetchData();
+    refresh();
+    //setCategoryName(categoryNam);
+    console.log("categoryName : ", categoryName);
   }, []);
 
   return (
@@ -233,7 +241,7 @@ const CategoriesScreen = ({ navigation, route }) => {
       <View style={styles.topBarContainer}>
         <TouchableOpacity
           onPress={() => {
-            navigation.jumpTo("home");
+            clearAndJump();
           }}
         >
           <Ionicons

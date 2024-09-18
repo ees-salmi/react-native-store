@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from "firebase/firestore";
 import SearchableDropdown from 'react-native-searchable-dropdown';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
@@ -64,7 +64,9 @@ const CategorySearchDropdown = () => {
   const placeholder =  <ArabicText text={'بحث عن الفئات '} ></ArabicText>
 
   return (
-    <SearchableDropdown
+    <View>
+      
+        <SearchableDropdown
       onTextChange={handleSearchTextChange}
       onItemSelect={handleProductPress}
       defaultIndex={0}
@@ -81,6 +83,10 @@ const CategorySearchDropdown = () => {
       resetValue={false}
       underlineColorAndroid="transparent"
     />
+    
+    </View>
+  
+
   );
 };
 
@@ -91,7 +97,7 @@ const styles = StyleSheet.create({
   searchDropdownInput: {
     padding: 15,
     borderColor: '#000', // Bold black border
-    borderWidth: 2,      // Bold border width
+    borderWidth: 2,
     borderRadius: 10,
     backgroundColor: '#fff',
     shadowColor: '#000', // Add shadow
@@ -101,6 +107,8 @@ const styles = StyleSheet.create({
     elevation: 5,  
     width:250,
     height:45,
+    textAlign: 'right',          // Align text to the right
+    writingDirection: 'rtl', 
   },
   searchDropdownItem: {
     padding: 3,
@@ -109,6 +117,8 @@ const styles = StyleSheet.create({
   },
   searchDropdownItemText: {
     fontSize: 16,
+    textAlign: 'right',          // Align text to the right
+    writingDirection: 'rtl',
   },
   searchDropdownItemsContainer: {
     maxHeight: 150,

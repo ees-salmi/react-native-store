@@ -5,10 +5,7 @@ import { useFonts } from "expo-font";
 
 const ArabicText = ({ text, fweight, fsize }) => {
   // Load fonts
-  const [fontsLoaded] = useFonts({
-    CairoRegular: require("../../assets/fonts/static/Cairo-Regular.ttf"),
-    CairoBold: require("../../assets/fonts/static/Cairo-Bold.ttf"),
-  });
+
 
   /*if (!fontsLoaded) {
     return <AppLoading />; // Show a loader until fonts are loaded
