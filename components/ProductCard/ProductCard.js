@@ -21,14 +21,7 @@ const ProductCard = ({
         <Image source={{ uri: image }} style={styles.productImage} />
       </View>
       <View style={styles.infoContainer}>
-        <View>
-          <Text style={styles.secondaryTextSm}>{`${name.substring(
-            0,
-            10
-          )}..`}</Text>
-          <Text style={styles.primaryTextSm}>{price}$</Text>
-        </View>
-        <View>
+      <View>
           {quantity > 0 ? (
             <TouchableOpacity
               style={styles.iconContainer}
@@ -41,6 +34,13 @@ const ProductCard = ({
               <Ionicons name="cart" size={20} color="white" />
             </TouchableOpacity>
           )}
+        </View>
+        <View>
+          <Text style={styles.secondaryTextSm}>{`${name.substring(
+            0,
+            10
+          )}..`}</Text>
+          <Text style={styles.primaryTextSm}>{price} dh</Text>
         </View>
       </View>
     </TouchableOpacity>
