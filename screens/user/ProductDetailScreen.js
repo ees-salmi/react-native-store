@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Image,
@@ -6,189 +7,127 @@ import {
   StatusBar,
   Text,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import cartIcon from "../../assets/icons/cart_beg.png";
-import { colors, network } from "../../constants";
-import CustomButton from "../../components/CustomButton";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import cartIcon from "../../assets/icons/cart_beg.png";
+import CustomButton from "../../components/CustomButton";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
+import { colors } from "../../constants";
+import { collection, getDocs, deleteDoc, doc, getDoc, setDoc, updateDoc  } from "firebase/firestore"; 
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const ProductDetailScreen = ({ navigation, route }) => {
   const { product } = route.params;
-  const cartproduct = useSelector((state) => state.product);
+  const cartProducts = useSelector((state) => state.product);
   const dispatch = useDispatch();
-
   const { addCartItem } = bindActionCreators(actionCreaters, dispatch);
 
-  //method to add item to cart(redux)
-  const handleAddToCat = (item) => {
-    addCartItem(item);
-  };
-
-  //remove the authUser from async storage and navigate to login
-  const logout = async () => {
-    await AsyncStorage.removeItem("authUser");
-    navigation.replace("login");
-  };
-
   const [onWishlist, setOnWishlist] = useState(false);
-  const [avaiableQuantity, setAvaiableQuantity] = useState(0);
+  const [availableQuantity, setAvailableQuantity] = useState(0);
   const [quantity, setQuantity] = useState(0);
-  const [productImage, SetProductImage] = useState(" ");
+  const [productImage, setProductImage] = useState("");
   const [wishlistItems, setWishlistItems] = useState([]);
   const [error, setError] = useState("");
-  const [isDisable, setIsDisbale] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(true);
   const [alertType, setAlertType] = useState("error");
 
-  //method to fetch wishlist from server using API call
-  const fetchWishlist = async () => {
-    const value = await AsyncStorage.getItem("authUser"); // get authUser from async storage
-    let user = JSON.parse(value);
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", user.token);
+  useEffect(() => {
+    setInitialProductDetails();
+    fetchWishlist();
+  }, []);
 
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-    fetch(`${network.serverip}/wishlist`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result?.err === "jwt expired") {
-          logout();
-        }
-        if (result.success) {
-          setWishlistItems(result.data[0].wishlist);
-          setIsDisbale(false);
-
-          //check if the current active product is already in wishlish or not
-          result.data[0].wishlist.map((item) => {
-            if (item?.productId?._id === product?._id) {
-              setOnWishlist(true);
-            }
-          });
-
-          setError("");
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log("error", error);
-      });
+  const setInitialProductDetails = () => {
+    setQuantity(0);
+    setAvailableQuantity(product.quantity);
+    setProductImage(product?.image); // Assuming product image is directly in the product object
   };
 
-  //method to increase the product quantity
+  // Fetch wishlist from Firestore
+  const fetchWishlist = async () => {
+    try {
+      const value = await AsyncStorage.getItem("authUser");
+      const user = JSON.parse(value);
+      
+      const userDocRef = doc(db, "wishlists", user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const wishlistData = userDoc.data().wishlist || [];
+        setWishlistItems(wishlistData);
+        
+        // Check if current product is in wishlist
+        const isInWishlist = wishlistData.some((item) => item.productId === product._id);
+        setOnWishlist(isInWishlist);
+        setIsDisabled(false);
+      }
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+      setError("Failed to load wishlist.");
+    }
+  };
+
+  // Handle adding/removing product to/from wishlist
+  const handleWishlistBtn = async () => {
+    setIsDisabled(true);
+    try {
+      const value = await AsyncStorage.getItem("authUser");
+      const user = JSON.parse(value);
+      const userDocRef = doc(db, "wishlists", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      let wishlistData = userDoc.exists() ? userDoc.data().wishlist || [] : [];
+
+      if (onWishlist) {
+        // Remove product from wishlist
+        wishlistData = wishlistData.filter((item) => item.productId !== product._id);
+      } else {
+        // Add product to wishlist
+        wishlistData.push({
+          productId: product._id,
+          quantity: 1,
+        });
+      }
+
+      // Update Firestore with the new wishlist data
+      if (userDoc.exists()) {
+        await updateDoc(userDocRef, { wishlist: wishlistData });
+      } else {
+        await setDoc(userDocRef, { wishlist: wishlistData });
+      }
+
+      setWishlistItems(wishlistData);
+      setOnWishlist(!onWishlist);
+      setAlertType("success");
+    } catch (err) {
+      console.error("Error updating wishlist:", err);
+      setError("Failed to update wishlist.");
+      setAlertType("error");
+    }
+    setIsDisabled(false);
+  };
+
+  // Increase quantity
   const handleIncreaseButton = (quantity) => {
-    if (avaiableQuantity > quantity) {
+    if (availableQuantity > quantity) {
       setQuantity(quantity + 1);
     }
   };
 
-  //method to decrease the product quantity
+  // Decrease quantity
   const handleDecreaseButton = (quantity) => {
     if (quantity > 0) {
       setQuantity(quantity - 1);
     }
   };
-
-  //method to add or remove item from wishlist
-  const handleWishlistBtn = async () => {
-    setIsDisbale(true);
-    const value = await AsyncStorage.getItem("authUser");
-    let user = JSON.parse(value);
-
-    if (onWishlist) {
-      var myHeaders = new Headers();
-      myHeaders.append("x-auth-token", user.token);
-
-      var requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow",
-      };
-
-      //API call to remove a item in wishlish
-      fetch(
-        `${network.serverip}/remove-from-wishlist?id=${product?._id}`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          if (result.success) {
-            setError(result.message);
-            setAlertType("success");
-            setOnWishlist(false);
-          } else {
-            setError(result.message);
-            setAlertType("error");
-          }
-          setOnWishlist(!onWishlist);
-        })
-        .catch((error) => {
-          setError(result.message);
-          setAlertType("error");
-          console.log("error", error);
-        });
-      setIsDisbale(false);
-    } else {
-      var myHeaders2 = new Headers();
-      myHeaders2.append("x-auth-token", user.token);
-      myHeaders2.append("Content-Type", "application/json");
-
-      var raw2 = JSON.stringify({
-        productId: product?._id,
-        quantity: 1,
-      });
-
-      var addrequestOptions = {
-        method: "POST",
-        headers: myHeaders2,
-        body: raw2,
-        redirect: "follow",
-      };
-
-      console.log(addrequestOptions);
-
-      //API call to add a item in wishlish
-      fetch(`${network.serverip}/add-to-wishlist`, addrequestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result.success) {
-            setError(result.message);
-            setAlertType("success");
-            setOnWishlist(true);
-          } else {
-            setError(result.message);
-            setAlertType("error");
-          }
-          setOnWishlist(!onWishlist);
-        })
-        .catch((error) => {
-          setError(result.message);
-          setAlertType("error");
-          console.log("error", error);
-        });
-      setIsDisbale(false);
-    }
-  };
-
-  //set quantity, avaiableQuantity, product image and fetch wishlist on initial render
-  useEffect(() => {
-    setQuantity(0);
-    setAvaiableQuantity(product.quantity);
-    SetProductImage(`${network.serverip}/uploads/${product?.image}`);
-    fetchWishlist();
-  }, []);
-
-  //render whenever the value of wishlistItems change
-  useEffect(() => {}, [wishlistItems]);
-
   return (
     <View style={styles.container}>
       <StatusBar></StatusBar>
@@ -210,9 +149,9 @@ const ProductDetailScreen = ({ navigation, route }) => {
           style={styles.cartIconContainer}
           onPress={() => navigation.navigate("cart")}
         >
-          {cartproduct.length > 0 ? (
+          {cartProducts.length > 0 ? (
             <View style={styles.cartItemCountContainer}>
-              <Text style={styles.cartItemCountText}>{cartproduct.length}</Text>
+              <Text style={styles.cartItemCountText}>{cartProducts.length}</Text>
             </View>
           ) : (
             <></>
@@ -233,7 +172,7 @@ const ProductDetailScreen = ({ navigation, route }) => {
             <View style={styles.infoButtonContainer}>
               <View style={styles.wishlistButtonContainer}>
                 <TouchableOpacity
-                  disabled={isDisable}
+                  disabled={isDisabled}
                   style={styles.iconContainer}
                   onPress={() => handleWishlistBtn()}
                 >
@@ -251,7 +190,7 @@ const ProductDetailScreen = ({ navigation, route }) => {
               </View>
               <View style={styles.productPriceContainer}>
                 <Text style={styles.secondaryTextSm}>Price:</Text>
-                <Text style={styles.primaryTextSm}>{product?.price}$</Text>
+                <Text style={styles.primaryTextSm}>{product?.price} dh</Text>
               </View>
             </View>
             <View style={styles.productDescriptionContainer}>
@@ -282,11 +221,11 @@ const ProductDetailScreen = ({ navigation, route }) => {
               </View>
             </View>
             <View style={styles.productButtonContainer}>
-              {avaiableQuantity > 0 ? (
+              {availableQuantity > 0 ? (
                 <CustomButton
                   text={"Add to Cart"}
                   onPress={() => {
-                    handleAddToCat(product);
+                    addCartItem(product);
                   }}
                 />
               ) : (
