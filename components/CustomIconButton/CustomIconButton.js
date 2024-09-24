@@ -8,7 +8,8 @@ const CustomIconButton = ({image, onPress, active }) => {
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: active ? colors.success : colors.white },
+        { backgroundColor: active ? colors.success : colors.white, marginBottom:20  },
+        
       ]}
       onPress={onPress}
     >

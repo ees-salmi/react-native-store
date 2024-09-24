@@ -22,6 +22,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import firebaseConfig from "../../config";
+import ArabicText from "../../components/ArabicText/ArabicText";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -113,7 +114,8 @@ const LoginScreen = ({ navigation }) => {
           <StatusBar></StatusBar>
           <View style={styles.welconeContainer}>
             <View>
-              <Text style={styles.welcomeText}>Welcome to EasyBuy</Text>
+            <ArabicText style={styles.welcomeText} fsize={28} fweight={50} text={'مرحبا بكم هوتة شوب'} />
+              
               <Text style={styles.welcomeParagraph}>make your ecommerce easy</Text>
             </View>
             <View>
@@ -121,18 +123,19 @@ const LoginScreen = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.screenNameContainer}>
-            <Text style={styles.screenNameText}>Login</Text>
+          <ArabicText style={styles.screenNameText} fsize={28} fweight={80} text={'تسجيل الدخول'} />
+            
           </View>
-          <CustomInput value={email} setValue={setEmail} placeholder="Email" />
-          <CustomInput value={password} setValue={setPassword} placeholder="Password" secureTextEntry />
+          <CustomInput value={email} setValue={setEmail} placeholder="البريد الالكتروني" />
+          <CustomInput value={password} setValue={setPassword} placeholder="كلمة المرور" secureTextEntry />
           {error ? <CustomAlert message={error} type="error" /> : null}
         </ScrollView>
         <View style={styles.buttomContainer}>
-          <CustomButton text={"Login"} onPress={handleAuthentication} />
+          <CustomButton text={ <ArabicText fsize={20} text={'دخول'} /> } onPress={handleAuthentication} />
         </View>
         <View style={styles.bottomContainer}>
           <Text>Don't have an account?</Text>
-          <Text onPress={() => navigation.navigate("sendotp")} style={styles.signupText}>send otp</Text>
+          <Text onPress={() => navigation.navigate("confirmlocation")} style={styles.signupText}>location</Text>
         </View>
       </KeyboardAvoidingView>
     </InternetConnectionAlert>
@@ -216,8 +219,8 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    justifyContent: "flex-end",
+    alignItems: "end",
   },
   screenNameText: {
     fontSize: 30,

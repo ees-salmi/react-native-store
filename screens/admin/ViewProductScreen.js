@@ -153,10 +153,10 @@ const ViewProductScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>View Product</Text>
+          <Text style={styles.screenNameText}>منتجات</Text>
         </View>
         <View>
-          <Text style={styles.screenNameParagraph}>View all products</Text>
+          <Text style={styles.screenNameParagraph}>عرض جميع المنتجات</Text>
         </View>
       </View>
       <CustomAlert message={error} type={alertType} />
@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
   screenNameText: {
     fontSize: 30,

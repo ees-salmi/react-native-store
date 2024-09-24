@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Dimensions,
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useEffect } from "react";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -33,6 +34,7 @@ const db = getFirestore(app);
 
 const CategoriesScreen = ({ navigation, route }) => {
   const { categoryName } = route.params;
+  
   const [categoryNam, setCategoryNam] = useState(categoryName);
   const categoryID = "32343";
   const [isloading, setIsloading] = useState(false);
@@ -44,6 +46,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   const [filterItem, setFilterItem] = useState("");
   const [category, setCategory] = useState([]);
   const [brand, setBrand] = useState([]);
+  const [foundbrand, setFoundbrand] = useState([]);
   const [selectedTab, setSelectedTab] = useState(category[0]);
 
   //get the dimenssions of active window
@@ -111,6 +114,11 @@ const CategoriesScreen = ({ navigation, route }) => {
       });
       setProducts(products);
       setFoundItems(products);
+      let brands = [];
+      products.map(p => brands.push(p.brand)) ;
+      const fb = filterDuplicates(brands)
+      setFoundbrand(fb);
+      console.log("found brands :",fb);
       setFilterItem(products);
       console.log("found items :",foundItems);
       setIsloading(false);
@@ -122,6 +130,18 @@ const CategoriesScreen = ({ navigation, route }) => {
       setIsloading(false);
     }
   };
+
+  const filterDuplicates = (arrayWithDuplicates) => {
+
+    const uniqueArray = arrayWithDuplicates.reduce(
+      (accumulator, currentValue) => {
+          if (!accumulator.includes(currentValue)) {
+              accumulator.push(currentValue);
+          }
+          return accumulator;
+      }, []);
+      return uniqueArray ;
+  }
   
   //method to fetch the product from server using API call
   const fetchProduct = () => {
@@ -174,7 +194,8 @@ const CategoriesScreen = ({ navigation, route }) => {
       querySnapshot.forEach((doc) => {
         brands.push({ id: doc.id, ...doc.data() });
       });
-      setBrand(brands);
+      const b = filterBrands(brands, foundbrand);
+      setBrand(b);
       setIsloading(false);
     } catch (error) {
       setError(error.message);
@@ -185,6 +206,10 @@ const CategoriesScreen = ({ navigation, route }) => {
     }
   };
 
+  const filterBrands = (brandsObjects, brands) => {
+    return brandsObjects.filter(brandObj => brands.includes(brandObj.title));
+  };
+  
   //method to filter the product according to user search in selected category
   const filter = () => {
     const keyword = filterItem;
@@ -216,24 +241,25 @@ const CategoriesScreen = ({ navigation, route }) => {
   // useEffect(() => {
   //   filter();
   // }, [filterItem]);
-  const fetchData = async () => {
+  const fetchData = async (categoryName) => {
       await fetchCategories();
       await fetchProductsByCategory(categoryName);
       await fetchBrands();
   }
   const clearAndJump = () => {
     setCategoryNam("");
+    setFoundItems([]);
+    setBrand([]);
     navigation.jumpTo("home");
 
   }
   //fetch the product on initial render
-  useEffect(() => {
-    fetchData();
-    refresh();
-    //setCategoryName(categoryNam);
-    console.log("categoryName : ", categoryName);
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData(categoryName);
 
+    }, [categoryName])
+  );
   return (
     <View style={styles.container}>
       <StatusBar></StatusBar>
@@ -291,7 +317,7 @@ const CategoriesScreen = ({ navigation, route }) => {
           keyExtractor={(index, item) => `${index}-${item}`}
           horizontal
           style={{ flexGrow: 0 }}
-          contentContainerStyle={{ padding: 10 }}
+          contentContainerStyle={{ padding: 10}}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: tab }) => (
             <CustomIconButton

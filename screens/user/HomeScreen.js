@@ -94,7 +94,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const handleCategoryPress = (category) => {
-    navigation.navigate("categories", { "categoryName" :category });
+    navigation.navigate("categories", { "categoryName" : category });
   };
 
   const handleAddToCart = (product) => {

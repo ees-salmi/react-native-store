@@ -45,6 +45,7 @@ const AddProductScreen = ({ navigation, route }) => {
   const [user, setUser] = useState({});
   const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openbrand, setOpenbrand] = useState(false);
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
   const [items, setItems] = useState([]);
@@ -287,10 +288,10 @@ const AddProductScreen = ({ navigation, route }) => {
      
           <DropDownPicker
             placeholder={"Select  Category"}
-            open={open}
+            open={openbrand}
             value={category}
             items={items}
-            setOpen={setOpen}
+            setOpen={setOpenbrand}
             setValue={setCategory}
             setItems={setItems}
             disabled={statusDisable}
