@@ -14,6 +14,14 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput";
 import ProgressDialog from "react-native-progress-dialog";
 import OrderList from "../../components/OrderList/OrderList";
+import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore"; 
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const ViewOrdersScreen = ({ navigation, route }) => {
   const { authUser } = route.params;
@@ -54,41 +62,35 @@ const ViewOrdersScreen = ({ navigation, route }) => {
   };
 
   //method the fetch the order data from server using API call
-  const fetchOrders = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", getToken(authUser));
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
+  const fetchOrders = async () => {
     setIsloading(true);
-    fetch(`${network.serverip}/admin/orders`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setOrders(result.data);
-          setFoundItems(result.data);
-          setError("");
-        } else {
-          setError(result.message);
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
+  
+    try {
+      const querySnapshot = await getDocs(collection(db, "orders"));
+      const orders = [];
+      querySnapshot.forEach((doc) => {
+        orders.push({ id: doc.id, ...doc.data() });
       });
+      setOrders(orders);
+      setFoundItems(orders);
+      console.log("orders: ", orders);
+      setIsloading(false);
+    } catch (error) {
+      setError(error.message);
+      console.log("error", error);
+      setIsloading(false);
+    }finally {
+      setIsloading(false);
+    }
   };
 
+  
   //method to filer the orders for by title [search bar]
   const filter = () => {
     const keyword = filterItem;
     if (keyword !== "") {
       const results = orders?.filter((item) => {
-        return item?.orderId.toLowerCase().includes(keyword.toLowerCase());
+        return item?.id.toLowerCase().includes(keyword.toLowerCase());
       });
       setFoundItems(results);
     } else {
@@ -124,16 +126,16 @@ const ViewOrdersScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>View Order</Text>
+          <Text style={styles.screenNameText}>الطلبيات</Text>
         </View>
         <View>
-          <Text style={styles.screenNameParagraph}>View all orders</Text>
+          <Text style={styles.screenNameParagraph}>كل الطلبيات</Text>
         </View>
       </View>
       <CustomAlert message={error} type={alertType} />
       <CustomInput
         radius={5}
-        placeholder={"Search..."}
+        placeholder={"بحث..."}
         value={filterItem}
         setValue={setFilterItem}
       />
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
   },
   screenNameText: {
     fontSize: 30,

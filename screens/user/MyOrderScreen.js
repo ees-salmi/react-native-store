@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const MyOrderScreen = ({ navigation, route }) => {
   const { user } = route.params;
   const [isloading, setIsloading] = useState(false);
-  const [label, setLabel] = useState("Please wait...");
+  const [label, setLabel] = useState("المرجو الانتظار ...");
   const [refeshing, setRefreshing] = useState(false);
   const [alertType, setAlertType] = useState("error");
   const [error, setError] = useState("");

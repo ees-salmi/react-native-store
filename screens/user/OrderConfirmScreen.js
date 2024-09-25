@@ -24,10 +24,10 @@ const OrderConfirmScreen = ({ navigation }) => {
       <View style={styles.imageConatiner}>
         <Image source={SuccessImage} style={styles.Image} />
       </View>
-      <Text style={styles.secondaryText}>Order has be confirmed</Text>
+      <Text style={styles.secondaryText}>تم تأكيد طلبكم</Text>
       <View>
         <CustomButton
-          text={"Back to Home"}
+          text={"العودة إلى التسوق"}
           onPress={() => navigation.replace("tab", { user: user })}
         />
       </View>

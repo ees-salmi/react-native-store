@@ -14,6 +14,14 @@ import ProgressDialog from "react-native-progress-dialog";
 import BasicProductList from "../../components/BasicProductList/BasicProductList";
 import CustomButton from "../../components/CustomButton";
 import DropDownPicker from "react-native-dropdown-picker";
+import { collection, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore"; 
+import firebaseConfig from "../../config";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const ViewOrderDetailScreen = ({ navigation, route }) => {
   const { orderDetail, Token } = route.params;
@@ -27,9 +35,9 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
   const [items, setItems] = useState([
-    { label: "Pending", value: "pending" },
-    { label: "Shipped", value: "shipped" },
-    { label: "Delivered", value: "delivered" },
+    { label: "قيد الانتظار", value: "قيد الانتظار" },
+    { label: "تم شحنها", value: "تم شحنها" },
+    { label: "تم التوصيل", value: "تم التوصيل" },
   ]);
 
   //method to convert the time into AM PM format
@@ -61,40 +69,29 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   };
 
   //method to update the status using API call
-  const handleUpdateStatus = (id) => {
+  const handleUpdateStatus = async (orderId) => {
     setIsloading(true);
     setError("");
     setAlertType("error");
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", Token);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-    console.log(
-      `Link:${network.serverip}/admin/order-status?orderId=${id}&status=${value}`
-    );
-
-    fetch(
-      `${network.serverip}/admin/order-status?orderId=${id}&status=${value}`,
-      requestOptions
-    ) //API call
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success == true) {
-          setError(`Order status is successfully updated to ${value}`);
-          setAlertType("success");
-          setIsloading(false);
-        }
-      })
-      .catch((error) => {
-        setAlertType("error");
-        setError(error);
-        console.log("error", error);
-        setIsloading(false);
+  
+    try {
+      // Reference the document in Firestore for the specific order
+      const orderRef = doc(db, "orders", orderId);
+  
+      // Update the status of the order
+      await updateDoc(orderRef, {
+        status: value, // Assuming 'value' contains the new status
       });
+  
+      setError(`Order status is successfully updated to ${value}`);
+      setAlertType("success");
+    } catch (error) {
+      setAlertType("error");
+      setError("Failed to update order status: " + error.message);
+      console.log("Error updating status:", error);
+    } finally {
+      setIsloading(false);
+    }
   };
 
   // calculate the total cost and set the all requried variables on initial render
@@ -116,9 +113,10 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
     );
     setTotalCost(
       orderDetail?.items.reduce((accumulator, object) => {
-        return (accumulator + object.price) * object.quantity;
+        return accumulator + object.price * object.quantity; // Multiply first, then accumulate
       }, 0) // calculate the total cost
     );
+    
   }, []);
   return (
     <View style={styles.container}>
@@ -210,7 +208,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
             {orderDetail?.items.map((product, index) => (
               <View key={index}>
                 <BasicProductList
-                  title={product?.productId?.title}
+                  title={product?.title}
                   price={product?.price}
                   quantity={product?.quantity}
                 />
@@ -219,7 +217,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           </ScrollView>
           <View style={styles.orderItemContainer}>
             <Text style={styles.orderItemText}>Total</Text>
-            <Text>{totalCost}$</Text>
+            <Text>{totalCost} dh</Text>
           </View>
         </View>
         <View style={styles.emptyView}></View>
@@ -246,7 +244,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           {statusDisable == false ? (
             <CustomButton
               text={"Update"}
-              onPress={() => handleUpdateStatus(orderDetail?._id)}
+              onPress={() => handleUpdateStatus(orderDetail?.id)}
             />
           ) : (
             <CustomButton text={"Update"} disabled />

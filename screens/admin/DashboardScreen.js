@@ -39,7 +39,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 1,
               title: "المستخدمين",
-              value: 5,
+              value: 3,
               iconName: "person",
               type: "أساسي",
               screenName: "عرض_المستخدمين",
@@ -47,7 +47,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 2,
               title: "الطلبات",
-              value: 8,
+              value: 6,
               iconName: "cart",
               type: "ثانوي",
               screenName: "عرض_الطلبات",
@@ -55,7 +55,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 3,
               title: "المنتجات",
-              value: 3,
+              value: 19,
               iconName: "laptop",
               type: "تحذير",
               screenName: "عرض_المنتجات",
@@ -63,7 +63,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 4,
               title: "الفئات",
-              value: 9,
+              value: 11,
               iconName: "menu",
               type: "مقفل",
               screenName: "عرض_الفئات",
@@ -183,7 +183,7 @@ const DashboardScreen = ({ navigation, route }) => {
               type="morden"
             />
             <OptionList
-              text={"Orders"}
+              text={"commandes"}
               Icon={Ionicons}
               iconName={"cart"}
               onPress={() =>

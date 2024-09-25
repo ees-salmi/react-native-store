@@ -1,39 +1,33 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { colors } from "../../constants";
-
 function getTime(date) {
-  let t = new Date(date);
-  const hours = ("0" + t.getHours()).slice(-2);
+  // Convert Firebase Timestamp to Date object if necessary
+  let t = date instanceof Date ? date : date.toDate();
+  
+  const hours = t.getHours();
   const minutes = ("0" + t.getMinutes()).slice(-2);
   const seconds = ("0" + t.getSeconds()).slice(-2);
-  let time = `${hours}:${minutes}:${seconds}`;
-  // Check correct time format and split into components
-  time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [
-    time,
-  ];
-
-  if (time.length > 1) {
-    // If time format correct
-    time = time.slice(1); // Remove full string match value
-    time[5] = +time[0] < 12 ? " AM" : " PM"; // Set AM/PM
-    time[0] = +time[0] % 12 || 12; // Adjust hours
-  }
-  return time.join(""); // return adjusted time or original string
+  
+  const ampm = hours >= 12 ? " PM" : " AM";
+  const formattedHours = hours % 12 || 12; // Convert 0 to 12
+  
+  return `${formattedHours}:${minutes}:${seconds}${ampm}`;
 }
-
+const str = (str) => {
+  return str.substring(0,3);
+}
 const dateFormat = (datex) => {
-  let t = new Date(datex);
-  const date = ("0" + t.getDate()).slice(-2);
-  const month = ("0" + (t.getMonth() + 1)).slice(-2);
-  const year = t.getFullYear();
-  const hours = ("0" + t.getHours()).slice(-2);
-  const minutes = ("0" + t.getMinutes()).slice(-2);
-  const seconds = ("0" + t.getSeconds()).slice(-2);
-  const newDate = `${date}-${month}-${year}`;
+  // Convert Firebase Timestamp to Date object if necessary
+  let t = datex instanceof Date ? datex : datex.toDate();
 
-  return newDate;
+  const date = ("0" + t.getDate()).slice(-2);
+  const month = ("0" + (t.getMonth() + 1)).slice(-2); // Month is zero-based
+  const year = t.getFullYear();
+
+  return `${date}-${month}-${year}`;
 };
+
 
 const OrderList = ({ item, onPress }) => {
   const [totalCost, setTotalCost] = useState(0);
@@ -46,17 +40,17 @@ const OrderList = ({ item, onPress }) => {
     });
     setQuantity(packageItems);
     setTotalCost(
-      item?.items.reduce((accumulator, object) => {
-        return (accumulator + object.price) * object.quantity;
-      }, 0)
-    );
+      item?.items.reduce((accumulator, object) => 
+        accumulator + (object.price * object.quantity), 0
+      )
+    );    
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.innerRow}>
         <View>
-          <Text style={styles.primaryText}>Order # {item?.orderId}</Text>
+          <Text style={styles.primaryText}>commande Numero :  {str(item?.id)}</Text>
         </View>
         <View style={styles.timeDateContainer}>
           <Text style={styles.secondaryTextSm}>
@@ -72,12 +66,12 @@ const OrderList = ({ item, onPress }) => {
       )}
       {item?.user?.email && (
         <View style={styles.innerRow}>
-          <Text style={styles.secondaryText}>{item?.user?.email} </Text>
+          <Text style={styles.secondaryText}>{item?.email} </Text>
         </View>
       )}
       <View style={styles.innerRow}>
         <Text style={styles.secondaryText}>Quantity : {quantity}</Text>
-        <Text style={styles.secondaryText}>Total Amount : {totalCost}$</Text>
+        <Text style={styles.secondaryText}>Total  : {totalCost} dh</Text>
       </View>
       <View style={styles.innerRow}>
         <TouchableOpacity style={styles.detailButton} onPress={onPress}>

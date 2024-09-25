@@ -70,6 +70,7 @@ const CheckoutScreen = ({ navigation, route }) => {
     cartproduct.forEach((product) => {
       let obj = {
         productId: product.id,
+        title : product.title,
         price: product.price,
         quantity: product.quantity,
       };
@@ -103,7 +104,7 @@ const CheckoutScreen = ({ navigation, route }) => {
       console.log(error.message);
       setIsloading(false);
     }
-    
+    navigation.navigate("orderconfirm");
   };
 
   // set the address and total cost on initital render
