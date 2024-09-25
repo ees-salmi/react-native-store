@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { colors } from "../../constants";
-
+import ArabicText from "../ArabicText/ArabicText";
 const CustomInput = ({
   value,
   setValue,
@@ -39,12 +39,14 @@ export default CustomInput;
 const styles = StyleSheet.create({
   CustomInput: {
     height: 40,
-    marginBottom: 10,
-    marginTop: 10,
+    margin: 10,
     width: "100%",
     padding: 5,
     backgroundColor: colors.white,
     elevation: 5,
     paddingHorizontal: 20,
+    alignContent:'flex-end',
+    alignItems:'flex-end',
+    textAlign:'right',
   },
 });

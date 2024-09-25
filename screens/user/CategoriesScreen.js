@@ -194,8 +194,8 @@ const CategoriesScreen = ({ navigation, route }) => {
       querySnapshot.forEach((doc) => {
         brands.push({ id: doc.id, ...doc.data() });
       });
-      const b = filterBrands(brands, foundbrand);
-      setBrand(b);
+      //const b = filterBrands(brands, foundbrand);
+      setBrand(brands);
       setIsloading(false);
     } catch (error) {
       setError(error.message);

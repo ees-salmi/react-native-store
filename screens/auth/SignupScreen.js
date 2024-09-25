@@ -20,16 +20,7 @@ import InternetConnectionAlert from "react-native-internet-connection-alert";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC9FNql5E0l-OyHLLkE9e8HDiPU8A-uGFs",
-  authDomain: "atlas-app-f8c98.firebaseapp.com",
-  projectId: "atlas-app-f8c98",
-  storageBucket: "atlas-app-f8c98.appspot.com",
-  messagingSenderId: "173835230328",
-  appId: "1:173835230328:web:00c4c3bb3f6db10cc9a18d",
-  measurementId: "G-FPKHGNPC1J"
-};
+import firebaseConfig from "../../config";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -71,13 +62,17 @@ const SignupScreen = ({ navigation }) => {
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("User registered successfully:", user);
-        navigation.navigate("login");
+        navigation.navigate("confirmlocation");
       })
       .catch((error) => {
         console.error("Registration error:", error.message);
         setError(error.message);
       });
   };
+
+  const gotolocation = () => {
+    navigation.navigate("confirmlocation");
+  }
   return (
     <InternetConnectionAlert
       onChange={(connectionState) => {
@@ -105,12 +100,11 @@ const SignupScreen = ({ navigation }) => {
           </View>
           <View style={styles.screenNameContainer}>
             <View>
-              <Text style={styles.screenNameText}>Sign up</Text>
+              <Text style={styles.screenNameText}>انشاء حساب</Text>
             </View>
             <View>
               <Text style={styles.screenNameParagraph}>
-                Create your account on EasyBuy to get an access to millions of
-                products
+                ...
               </Text>
             </View>
           </View>
@@ -119,40 +113,40 @@ const SignupScreen = ({ navigation }) => {
             <CustomInput
               value={name}
               setValue={setName}
-              placeholder={"Name"}
+              placeholder={"الاسم "}
               placeholderTextColor={colors.muted}
               radius={5}
             />
             <CustomInput
               value={email}
               setValue={setEmail}
-              placeholder={"Email"}
+              placeholder={"البريد الالكتروني  "}
               placeholderTextColor={colors.muted}
               radius={5}
             />
             <CustomInput
               value={password}
               setValue={setPassword}
-              secureTextEntry={true}
-              placeholder={"Password"}
+              secureTextEntry={false}
+              placeholder={"كلمة السر"}
               placeholderTextColor={colors.muted}
               radius={5}
             />
             <CustomInput
               value={confirmPassword}
               setValue={setConfirmPassword}
-              secureTextEntry={true}
-              placeholder={"Confirm Password"}
+              secureTextEntry={false}
+              placeholder={" تأكيد كلمة السر"}
               placeholderTextColor={colors.muted}
               radius={5}
             />
           </View>
         </ScrollView>
         <View style={styles.buttomContainer}>
-          <CustomButton text={"Sign up"} onPress={signUpHandle} />
+          <CustomButton text={" تأكيد  المكان"} onPress={gotolocation} />
         </View>
         <View style={styles.bottomContainer}>
-          <Text>Already have an account?</Text>
+          <Text>vous avez deja un compte?</Text>
           <Text
             onPress={() => navigation.navigate("login")}
             style={styles.signupText}
@@ -236,8 +230,8 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
   screenNameText: {
     fontSize: 30,

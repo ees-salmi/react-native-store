@@ -110,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
         style={styles.container}
       >
         <ScrollView style={{ flex: 1, width: "100%" }}>
-          <ProgressDialog visible={isLoading} label={"Login ..."} />
+          <ProgressDialog visible={isLoading} label={"دخول ..."} />
           <StatusBar></StatusBar>
           <View style={styles.welconeContainer}>
             <View>
@@ -134,8 +134,9 @@ const LoginScreen = ({ navigation }) => {
           <CustomButton text={ <ArabicText fsize={20} text={'دخول'} /> } onPress={handleAuthentication} />
         </View>
         <View style={styles.bottomContainer}>
-          <Text>Don't have an account?</Text>
-          <Text onPress={() => navigation.navigate("confirmlocation")} style={styles.signupText}>location</Text>
+        <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>
+        <ArabicText fsize={14} text={'انشاء حساب'} />
+          
         </View>
       </KeyboardAvoidingView>
     </InternetConnectionAlert>
