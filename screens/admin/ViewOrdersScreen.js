@@ -29,7 +29,7 @@ const ViewOrdersScreen = ({ navigation, route }) => {
   const [isloading, setIsloading] = useState(false);
   const [refeshing, setRefreshing] = useState(false);
   const [alertType, setAlertType] = useState("error");
-  const [label, setLabel] = useState("Loading...");
+  const [label, setLabel] = useState("تحميل...");
   const [error, setError] = useState("");
   const [orders, setOrders] = useState([]);
   const [foundItems, setFoundItems] = useState([]);

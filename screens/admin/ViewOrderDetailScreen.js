@@ -55,18 +55,16 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
 
   //method to convert the Data into dd-mm-yyyy format
   const dateFormat = (datex) => {
-    let t = new Date(datex);
+    // Convert Firebase Timestamp to Date object if necessary
+    let t = datex instanceof Date ? datex : datex.toDate();
+  
     const date = ("0" + t.getDate()).slice(-2);
-    const month = ("0" + (t.getMonth() + 1)).slice(-2);
+    const month = ("0" + (t.getMonth() + 1)).slice(-2); // Month is zero-based
     const year = t.getFullYear();
-    const hours = ("0" + t.getHours()).slice(-2);
-    const minutes = ("0" + t.getMinutes()).slice(-2);
-    const seconds = ("0" + t.getSeconds()).slice(-2);
-    const time = tConvert(`${hours}:${minutes}:${seconds}`);
-    const newDate = `${date}-${month}-${year}, ${time}`;
-
-    return newDate;
+  
+    return `${date}-${month}-${year}`;
   };
+  
 
   //method to update the status using API call
   const handleUpdateStatus = async (orderId) => {
@@ -83,7 +81,11 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
         status: value, // Assuming 'value' contains the new status
       });
   
-      setError(`Order status is successfully updated to ${value}`);
+      setError(
+        <Text>
+          تم تحديث حالة الطلب بنجاح إلى <Text style={{ fontWeight: "bold" }}>{value}</Text>
+        </Text>
+      );
       setAlertType("success");
     } catch (error) {
       setAlertType("error");
@@ -137,11 +139,11 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>Order Details</Text>
+          <Text style={styles.screenNameText}>تفاصيل الطلب</Text>
         </View>
         <View>
           <Text style={styles.screenNameParagraph}>
-            View all detail about order
+          عرض كافة التفاصيل حول الطلب
           </Text>
         </View>
       </View>
@@ -152,7 +154,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
       >
         <View style={styles.containerNameContainer}>
           <View>
-            <Text style={styles.containerNameText}>Ship & Bill to</Text>
+            <Text style={styles.containerNameText}>عنوان الارسال</Text>
           </View>
         </View>
         <View style={styles.ShipingInfoContainer}>
@@ -166,29 +168,29 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           <Text style={styles.secondarytextSm}>{orderDetail?.zipcode}</Text>
         </View>
         <View>
-          <Text style={styles.containerNameText}>Order Info</Text>
+          <Text style={styles.containerNameText}>معلومات الطلب</Text>
         </View>
         <View style={styles.orderInfoContainer}>
           <Text style={styles.secondarytextMedian}>
-            Order # {orderDetail?.orderId}
+            طلب # {orderDetail?.orderId}
           </Text>
           <Text style={styles.secondarytextSm}>
-            Ordered on {dateFormat(orderDetail?.updatedAt)}
+            تم الطلب في {dateFormat(orderDetail?.createdAt)}
           </Text>
           {orderDetail?.shippedOn && (
             <Text style={styles.secondarytextSm}>
-              Shipped on {orderDetail?.shippedOn}
+              تم الشحن في {orderDetail?.shippedOn}
             </Text>
           )}
           {orderDetail?.deliveredOn && (
             <Text style={styles.secondarytextSm}>
-              Delivered on {orderDetail?.deliveredOn}
+              تم التوصيل في {orderDetail?.deliveredOn}
             </Text>
           )}
         </View>
         <View style={styles.containerNameContainer}>
           <View>
-            <Text style={styles.containerNameText}>Package Details</Text>
+            <Text style={styles.containerNameText}>تفاصيل الطلب</Text>
           </View>
         </View>
         <View style={styles.orderItemsContainer}>
@@ -198,7 +200,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           </View>
           <View style={styles.orderItemContainer}>
             <Text style={styles.orderItemText}>
-              Order on : {dateFormat(orderDetail?.updatedAt)}
+              Order on : {dateFormat(orderDetail?.createdAt)}
             </Text>
           </View>
           <ScrollView
@@ -243,11 +245,11 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
         <View>
           {statusDisable == false ? (
             <CustomButton
-              text={"Update"}
+              text={"تحديث"}
               onPress={() => handleUpdateStatus(orderDetail?.id)}
             />
           ) : (
-            <CustomButton text={"Update"} disabled />
+            <CustomButton text={"تحديث"} disabled />
           )}
         </View>
       </View>
@@ -281,7 +283,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     marginBottom: 5,
   },
   screenNameText: {
@@ -298,8 +300,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 10,
@@ -311,8 +313,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
   containerNameText: {
     fontSize: 18,
@@ -328,7 +330,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 10,
@@ -376,7 +378,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 10,
