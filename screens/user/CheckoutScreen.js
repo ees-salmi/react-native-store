@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import BasicProductList from "../../components/BasicProductList/BasicProductList";
-import { colors, network } from "../../constants";
+import { colors } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import { useSelector, useDispatch } from "react-redux";
 import * as actionCreaters from "../../states/actionCreaters/actionCreaters";
@@ -18,6 +18,16 @@ import { bindActionCreators } from "redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomInput from "../../components/CustomInput";
 import ProgressDialog from "react-native-progress-dialog";
+import ArabicText from "../../components/ArabicText/ArabicText";
+import { collection, addDoc} from "firebase/firestore"; 
+//import { use } from "i18next";
+import firebaseConfig from "../../config";
+import { initializeApp } from "firebase/app";
+import { getStorage} from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+const app = initializeApp(firebaseConfig);
+const storage =  getStorage(app);
+const db = getFirestore(app);
 
 const CheckoutScreen = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,6 +43,7 @@ const CheckoutScreen = ({ navigation, route }) => {
   const [city, setCity] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [adress2, setAddress2] = useState({});
 
   //method to remove the authUser from aysnc storage and navigate to login
   const logout = async () => {
@@ -40,24 +51,25 @@ const CheckoutScreen = ({ navigation, route }) => {
     navigation.replace("login");
   };
 
-  //method to handle checkout
+  const loadAdresses = async () => {
+    const data = await AsyncStorage.getItem("authUser");
+    if(data){
+      const authUser = JSON.parse(data);
+      const {email} = authUser ;  
+      setAddress2({"email" : email}) ;
+    }
+    const d = new Date();
+    console.log(d);
+  }
   const handleCheckout = async () => {
     setIsloading(true);
-    var myHeaders = new Headers();
-    const value = await AsyncStorage.getItem("authUser");
-    let user = JSON.parse(value);
-    console.log("Checkout:", user.token);
-
-    myHeaders.append("x-auth-token", user.token);
-    myHeaders.append("Content-Type", "application/json");
-
     var payload = [];
     var totalamount = 0;
 
     // fetch the cart items from redux and set the total cost
     cartproduct.forEach((product) => {
       let obj = {
-        productId: product._id,
+        productId: product.id,
         price: product.price,
         quantity: product.quantity,
       };
@@ -65,7 +77,8 @@ const CheckoutScreen = ({ navigation, route }) => {
       payload.push(obj);
     });
 
-    var raw = JSON.stringify({
+    const mail =  adress2.email ? adress2.email : "weldaslem17@gmail.com";
+    const orderData = {
       items: payload,
       amount: totalamount,
       discount: 0,
@@ -75,37 +88,27 @@ const CheckoutScreen = ({ navigation, route }) => {
       city: city,
       zipcode: zipcode,
       shippingAddress: streetAddress,
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
+      email: mail,
     };
-
-    fetch(network.serverip + "/checkout", requestOptions) //API call
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Checkout=>", result);
-        if (result.err === "jwt expired") {
-          setIsloading(false);
-          logout();
-        }
-        if (result.success == true) {
-          setIsloading(false);
-          emptyCart("empty");
-          navigation.replace("orderconfirm");
-        }
-      })
-      .catch((error) => {
-        setIsloading(false);
-        console.log("error", error);
-      });
+  
+    try {
+      
+      await addDoc(collection(db, "orders"), orderData);
+  
+      
+      setIsloading(false);
+      emptyCart("empty"); // Clear the cart after successful order
+      //navigation.replace("orderconfirm");
+    } catch (error) {
+      console.log(error.message);
+      setIsloading(false);
+    }
+    
   };
 
   // set the address and total cost on initital render
   useEffect(() => {
+    loadAdresses();
     if (streetAddress && city && country != "") {
       setAddress(`${streetAddress}, ${city},${country}`);
     } else {
@@ -138,7 +141,7 @@ const CheckoutScreen = ({ navigation, route }) => {
         <View></View>
       </View>
       <ScrollView style={styles.bodyContainer} nestedScrollEnabled={true}>
-        <Text style={styles.primaryText}>Order Summary</Text>
+        <ArabicText fsize={24} text={'ملخص الطلب '} />
         <ScrollView
           style={styles.orderSummaryContainer}
           nestedScrollEnabled={true}
@@ -155,17 +158,17 @@ const CheckoutScreen = ({ navigation, route }) => {
         <Text style={styles.primaryText}>Total</Text>
         <View style={styles.totalOrderInfoContainer}>
           <View style={styles.list}>
-            <Text>Order</Text>
-            <Text>{totalCost}$</Text>
+            <Text>Demande</Text>
+            <Text>{totalCost} dh</Text>
           </View>
           <View style={styles.list}>
-            <Text>Delivery</Text>
-            <Text>{deliveryCost}$</Text>
+            <Text>Livraison</Text>
+            <Text>{deliveryCost} dh</Text>
           </View>
           <View style={styles.list}>
             <Text style={styles.primaryTextSm}>Total</Text>
             <Text style={styles.secondaryTextSm}>
-              {totalCost + deliveryCost}$
+              {totalCost + deliveryCost} dh
             </Text>
           </View>
         </View>
@@ -174,7 +177,7 @@ const CheckoutScreen = ({ navigation, route }) => {
           <View style={styles.list}>
             <Text style={styles.secondaryTextSm}>Email</Text>
             <Text style={styles.secondaryTextSm}>
-              bukhtyar.haider1@gmail.com
+              {adress2.email}
             </Text>
           </View>
           <View style={styles.list}>
@@ -217,7 +220,6 @@ const CheckoutScreen = ({ navigation, route }) => {
         <View style={styles.emptyView}></View>
       </ScrollView>
       <View style={styles.buttomContainer}>
-        {country && city && streetAddress != "" ? (
           <CustomButton
             text={"Submit Order"}
             // onPress={() => navigation.replace("orderconfirm")}
@@ -225,9 +227,7 @@ const CheckoutScreen = ({ navigation, route }) => {
               handleCheckout();
             }}
           />
-        ) : (
-          <CustomButton text={"Submit Order"} disabled />
-        )}
+        
       </View>
       <Modal
         animationType="slide"

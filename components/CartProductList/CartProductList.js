@@ -40,7 +40,7 @@ const CartProductList = ({
               <Text style={styles.productTitle}>{title}</Text>
               <Text style={styles.productQuantitySm}>x{quantity}</Text>
               <View style={styles.productListBottomContainer}>
-                <Text style={styles.productPrice}>{price * quantity} $</Text>
+                <Text style={styles.productPrice}>{price * quantity} dh</Text>
 
                 <View style={styles.counter}>
                   <TouchableOpacity

@@ -5,7 +5,7 @@ const reducer = (state = [], action) => {
   switch (action.type) {
     case actions.CART_ADD:
       state.map((item, index) => {
-        if (item._id === action.payload._id) {
+        if (item.id === action.payload.id) {
           done = true;
           if (item.avaiableQuantity > item.quantity) {
             state[index].quantity = state[index].quantity + 1;
@@ -20,7 +20,7 @@ const reducer = (state = [], action) => {
         return [
           ...state,
           {
-            _id: action.payload._id,
+            id: action.payload.id,
             category: action.payload.category,
             createdAt: action.payload.createdAt,
             description: action.payload.description,
@@ -36,12 +36,12 @@ const reducer = (state = [], action) => {
       }
 
     case actions.CART_REMOVE:
-      return state.filter((item) => item._id !== action.payload);
+      return state.filter((item) => item.id !== action.payload);
 
     case actions.INCREASE_CART_ITEM_QUANTITY:
       if (action.payload.type === "increase") {
         state.map((item, index) => {
-          if (item._id === action.payload.id) {
+          if (item.id === action.payload.id) {
             return (state[index].quantity = state[index].quantity + 1);
           }
         });
@@ -50,7 +50,7 @@ const reducer = (state = [], action) => {
     case actions.DECREASE_CART_ITEM_QUANTITY:
       if (action.payload.type === "decrease") {
         state.map((item, index) => {
-          if (item._id === action.payload.id) {
+          if (item.id === action.payload.id) {
             return (state[index].quantity = state[index].quantity - 1);
           }
         });

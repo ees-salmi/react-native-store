@@ -75,7 +75,7 @@ const CartScreen = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.cartInfoTopBar}>
             <Text>Your Cart</Text>
-            <Text>{cartproduct.length} Items</Text>
+            <Text>{cartproduct.length} منتجات</Text>
           </View>
         </View>
 
@@ -98,22 +98,22 @@ const CartScreen = ({ navigation }) => {
             <CartProductList
               key={index}
               index={index}
-              image={`${network.serverip}/uploads/${item.image}`}
+              image={item.image}
               title={item.title}
               price={item.price}
               quantity={item.quantity}
               onPressIncrement={() => {
                 increaseQuantity(
-                  item._id,
+                  item.id,
                   item.quantity,
                   item.avaiableQuantity
                 );
               }}
               onPressDecrement={() => {
-                decreaseQuantity(item._id, item.quantity);
+                decreaseQuantity(item.id, item.quantity);
               }}
               handleDelete={() => {
-                deleteItem(item._id);
+                deleteItem(item.id);
               }}
             />
           ))}
@@ -130,14 +130,14 @@ const CartScreen = ({ navigation }) => {
             />
           </View>
           <View>
-            <Text style={styles.cartBottomPrimaryText}>Total</Text>
-            <Text style={styles.cartBottomSecondaryText}>{totalPrice}$</Text>
+            <Text style={styles.cartBottomPrimaryText}>المجموع</Text>
+            <Text style={styles.cartBottomSecondaryText}>{totalPrice}dh</Text>
           </View>
         </View>
         <View style={styles.cartBottomRightContainer}>
           {cartproduct.length > 0 ? (
             <CustomButton
-              text={"Checkout"}
+              text={"تأكيد"}
               onPress={() => navigation.navigate("checkout")}
             />
           ) : (

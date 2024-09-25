@@ -16,7 +16,7 @@ const BasicProductList = ({ title, price, quantity }) => {
         </View>
       </View>
       <View>
-        <Text style={styles.primaryText}>{quantity * price}$</Text>
+        <Text style={styles.primaryText}>{quantity * price} dh</Text>
       </View>
     </View>
   );
