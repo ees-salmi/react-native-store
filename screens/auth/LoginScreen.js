@@ -17,36 +17,22 @@ import LoginComponent from "../../components/LoginComponent/LoginComponent";
 import ProgressDialog from "react-native-progress-dialog";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// Import the functions you need from the SDKs you need
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import firebaseConfig from "../../config";
+
 import ArabicText from "../../components/ArabicText/ArabicText";
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+import auth from '@react-native-firebase/auth';
+
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [confirmResult, setConfirmResult] = useState(null);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-  const auth = getAuth(app);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        _storeData(user);
-        navigation.replace("tab", { user: user }); // Navigate to User Dashboard
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   // Method to store the authUser to async storage
   const _storeData = async (user) => {
@@ -59,48 +45,37 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleAuthentication = async () => {
+    console.log("clicked here ");
     setIsLoading(true);
-    //[check validation] -- Start
-    if (email === "") {
+    if (phoneNumber === "") {
       setIsLoading(false);
-      return setError("Please enter your email");
+      return setError("Please enter your phone");
     }
-    if (password === "") {
-      setIsLoading(false);
-      return setError("Please enter your password");
-    }
-    if (!email.includes("@")) {
-      setIsLoading(false);
-      return setError("Email is not valid");
-    }
-    if (email.length < 6) {
-      setIsLoading(false);
-      return setError("Email is too short");
-    }
-    if (password.length < 6) {
-      setIsLoading(false);
-      return setError("Password must be 6 characters long");
-    }
-    //[check validation] -- End
 
     try {
-      const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredentials.user);
-      console.log("User signed in successfully!",userCredentials.user);
-      _storeData(userCredentials.user);
-      console.log(userCredentials.user);
-     if(userCredentials.user.email === "elmustaphaes.salmi@gmail.com"){
-        navigation.replace("dashboard", { authUser: userCredentials.user });
-      }
-      else {
-        navigation.replace("homescreen", { authUser: userCredentials.user });
-      }
+      console.log("inside try ");
+      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+      setConfirmResult(confirmation);
+      setIsVisible(true); // Show verification code input
       
     } catch (error) {
-      console.error("Authentication error:", error.message);
-      setError(error.message);
+      console.log("inside catch ",error);
     } finally {
+      console.log("finnaly");
       setIsLoading(false);
+    }
+  };
+
+  const confirmCode = async () => {
+    if (verificationCode === "") {
+      return setError("Please enter the verification code");
+    }
+    try {
+      await confirmResult.confirm(verificationCode);
+      Alert.alert("Phone number verified!");
+      navigation.replace("tab"); // Navigate to User Dashboard
+    } catch (error) {
+      Alert.alert('Invalid code:', error.message);
     }
   };
 
@@ -124,14 +99,20 @@ const LoginScreen = ({ navigation }) => {
           </View>
           <View style={styles.screenNameContainer}>
           <ArabicText style={styles.screenNameText} fsize={28} fweight={80} text={'تسجيل الدخول'} />
-            
           </View>
-          <CustomInput value={email} setValue={setEmail} placeholder="البريد الالكتروني" />
-          <CustomInput value={password} setValue={setPassword} placeholder="كلمة المرور" secureTextEntry />
+          <CustomInput value={phoneNumber} setValue={setPhoneNumber} placeholder="رقم الهاتف" />
+          {isVisible && (
+            <CustomInput
+              value={verificationCode}
+              setValue={setVerificationCode}
+              placeholder="كلمة المرور"
+            />
+          )}
           {error ? <CustomAlert message={error} type="error" /> : null}
         </ScrollView>
         <View style={styles.buttomContainer}>
-          <CustomButton text={ <ArabicText fsize={20} text={'دخول'} /> } onPress={handleAuthentication} />
+          <CustomButton text={"Send Code"} onPress={handleAuthentication} />
+          {isVisible && <CustomButton text={"Confirm Code"} onPress={confirmCode} />}
         </View>
         <View style={styles.bottomContainer}>
         <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>

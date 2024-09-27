@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.atlas.hawta"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -37,7 +38,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"],
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
+    ],
     "extra": {
       "eas": {
         "projectId": "3aa83b82-98dc-4eb4-9705-5de6641893de"

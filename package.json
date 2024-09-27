@@ -24,7 +24,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "axios": "^1.7.4",
     "date-fns": "^2.29.1",
-    "expo": "~51.0.22",
+    "expo": "^51.0.34",
     "expo-app-loading": "^2.1.1",
     "expo-dev-client": "~4.0.20",
     "expo-file-system": "~17.0.1",
