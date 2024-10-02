@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation, route }) => {
   const cartproduct = useSelector((state) => state.product);
   const dispatch = useDispatch();
   const { addCartItem } = bindActionCreators(actionCreaters, dispatch);
-  const { user } = route.params;
+  //const { authUser } = route.params;
 
   const [categories, setCategories] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -149,10 +149,10 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    convertToJSON(user);
+    //convertToJSON(user);
     fetchCategories();
     fetchProducts();
-  }, [user]);
+  }, []);
 
  
 

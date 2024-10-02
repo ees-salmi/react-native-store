@@ -14,9 +14,10 @@ const CustomInput = ({
   keyboardType,
   maxLength,
   onChange,
+  textAlign = 'left',
 }) => {
   return (
-    <View style={{ width: width }}>
+    <View style={{ width: width, textAlign : textAlign }}>
       <TextInput
         placeholder={placeholder}
         onChangeText={setValue}
@@ -47,6 +48,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent:'flex-end',
     alignItems:'flex-end',
-    textAlign:'right',
+    fontSize : 20,
   },
 });

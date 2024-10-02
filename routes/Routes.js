@@ -29,6 +29,7 @@ import ConfirmLocation from "../screens/auth/ConfirmLocation";
 import SendOtp from "../screens/auth/SendOtp";
 import AddBrandScreen from "../screens/admin/AddBrandScreen";
 import ViewBrandScreen from "../screens/admin/AddBrandScreen";
+import HomeScreen from "../screens/user/HomeScreen.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,7 @@ const Routes = () => {
         <Stack.Screen name="editcategories" component={EditCategoryScreen} />
         <Stack.Screen name="viewusers" component={ViewUsersScreen} />
         <Stack.Screen name="categories" component={CategoriesScreen} />
+        <Stack.Screen name="homescreen" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

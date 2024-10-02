@@ -17,9 +17,10 @@ import LoginComponent from "../../components/LoginComponent/LoginComponent";
 import ProgressDialog from "react-native-progress-dialog";
 import InternetConnectionAlert from "react-native-internet-connection-alert";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import axios from 'axios';
 import ArabicText from "../../components/ArabicText/ArabicText";
-import auth from '@react-native-firebase/auth';
+
+import { OtpInput } from "react-native-otp-entry";
 
 
 const LoginScreen = ({ navigation }) => {
@@ -29,10 +30,47 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [isVisible, setIsVisible] = useState(false);
+  const [otp, setOtp] = useState('');
+
+  const verifyCode = async () => {
+    setIsLoading(true);
+    console.log(otp);
+    try {
+      const response = await axios.post('http://192.168.8.153:3000/verify-code', {
+        phoneNumber: "+212606060481",
+        code: otp,
+      });
+      setIsLoading(false);
+      if (response.data.success) {
+        //const user = { phoneNumber: phoneNumber, };
+        //_storeData(user);
+        navigation.navigate('confirmlocation');
+      }
+      
+    } catch (error) {
+      console.error('Error verifying code:', error);
+      setIsLoading(false);
+    }
+  };
 
 
+  const sendVerification = async () => {
+    setIsVisible(true);
+   /* setIsLoading(true);
+    try {
+      const response = await axios.post('http://192.168.8.153:3000/send-verification', {
+        phoneNumber: "+212606060481",
+      });
+      setIsVisible(true);
+      setIsLoading(false);
+      console.log(response.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Error sending verification:', error);
+    }*/
+  };
 
   // Method to store the authUser to async storage
   const _storeData = async (user) => {
@@ -44,40 +82,7 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleAuthentication = async () => {
-    console.log("clicked here ");
-    setIsLoading(true);
-    if (phoneNumber === "") {
-      setIsLoading(false);
-      return setError("Please enter your phone");
-    }
-
-    try {
-      console.log("inside try ");
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      setConfirmResult(confirmation);
-      setIsVisible(true); // Show verification code input
-      
-    } catch (error) {
-      console.log("inside catch ",error);
-    } finally {
-      console.log("finnaly");
-      setIsLoading(false);
-    }
-  };
-
-  const confirmCode = async () => {
-    if (verificationCode === "") {
-      return setError("Please enter the verification code");
-    }
-    try {
-      await confirmResult.confirm(verificationCode);
-      Alert.alert("Phone number verified!");
-      navigation.replace("tab"); // Navigate to User Dashboard
-    } catch (error) {
-      Alert.alert('Invalid code:', error.message);
-    }
-  };
+ 
 
   return (
     <InternetConnectionAlert onChange={(connectionState) => {}}>
@@ -100,23 +105,35 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.screenNameContainer}>
           <ArabicText style={styles.screenNameText} fsize={28} fweight={80} text={'تسجيل الدخول'} />
           </View>
-          <CustomInput value={phoneNumber} setValue={setPhoneNumber} placeholder="رقم الهاتف" />
-          {isVisible && (
-            <CustomInput
-              value={verificationCode}
-              setValue={setVerificationCode}
-              placeholder="كلمة المرور"
+        { !isVisible && <View style={styles.phoneNumber}>
+            <View style={styles.countryCodeInput}>
+              <CustomInput value={"+212"}/>
+            </View>
+            <View style={styles.phoneNumberInput}>
+              <CustomInput value={phoneNumber}
+                 keyboardType='phone-pad'
+                 setValue={setPhoneNumber} 
+                 placeholder="661235679"
+                 textAlign={'left'} />
+            </View>
+          </View>}
+          { isVisible && (
+            <OtpInput
+              numberOfDigits={6}
+              focusColor="green"
+              focusStickBlinkingDuration={500}
             />
-          )}
+          )
+          }
           {error ? <CustomAlert message={error} type="error" /> : null}
         </ScrollView>
         <View style={styles.buttomContainer}>
-          <CustomButton text={"Send Code"} onPress={handleAuthentication} />
-          {isVisible && <CustomButton text={"Confirm Code"} onPress={confirmCode} />}
+          { !isVisible && <CustomButton text={ <ArabicText fweight={700} fsize={24} text={"تأكيد"} /> } onPress={sendVerification} /> }
+          { isVisible && <CustomButton text={ <ArabicText  fweight={700} fsize={26} text={"تأكيد"} /> } onPress={verifyCode}  />}
         </View>
         <View style={styles.bottomContainer}>
-        <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>
-        <ArabicText fsize={14} text={'انشاء حساب'} />
+       { /* <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>
+        <ArabicText fsize={14} text={'انشاء حساب'} />*/}
           
         </View>
       </KeyboardAvoidingView>
@@ -208,5 +225,18 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "800",
     color: colors.muted,
+  },
+  phoneNumber: {
+    flexDirection: "row",  
+    width: "100%",         
+    justifyContent: "left",  
+    alignItems: "left", 
+  },
+  countryCodeInput: {
+    marginRight : 5,
+    width: 85,         
+  },
+  phoneNumberInput: {
+    width: "70%",         
   },
 });

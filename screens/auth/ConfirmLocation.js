@@ -2,12 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Alert, KeyboardAvoidingView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import CustomButton from '../../components/CustomButton';
 
 export default function App({navigation}) {
   const [location, setLocation] = useState(null);
   const [storedLocation, setStoredLocation] = useState(null);
 
-  // Get the current location on component mount
+  const handleAuthentication = async () => {
+    setIsLoading(true);
+    try {
+      const userCredentials = await signInWithEmailAndPassword(auth, "weldsalem17@gmail.com", "Password@123");
+      setUser(userCredentials.user);
+      console.log("User signed in successfully!",userCredentials.user);
+      _storeData(userCredentials.user);
+      console.log(userCredentials.user);
+     if(userCredentials.user.email === "weldsalem17@gmail.com"){
+      navigation.replace("homescreen", { authUser: userCredentials.user });
+      }
+  
+    } catch (error) {
+      console.error("Authentication error:", error.message);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -29,7 +48,7 @@ export default function App({navigation}) {
     } else {
       Alert.alert('Location not available', 'Please try again later.');
     }*/
-      navigation.navigate("login");
+      navigation.navigate("homescreen");
   };
 
   return (
@@ -54,7 +73,7 @@ export default function App({navigation}) {
           />
         )}
       </MapView>
-      <Button style={{ width : 200, height : 50}} title="تأكيد الموقع" onPress={storeCurrentLocation} />
+      <CustomButton text="تأكيد الموقع" onPress={storeCurrentLocation} />
       {storedLocation && (
         <Text style={styles.locationText}>
           Stored Location: Latitude {storedLocation.coords.latitude}, Longitude {storedLocation.coords.longitude}
