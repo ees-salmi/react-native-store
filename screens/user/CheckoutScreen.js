@@ -35,7 +35,7 @@ const CheckoutScreen = ({ navigation, route }) => {
   const cartproduct = useSelector((state) => state.product);
   const dispatch = useDispatch();
   const { emptyCart } = bindActionCreators(actionCreaters, dispatch);
-
+ 
   const [deliveryCost, setDeliveryCost] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [address, setAddress] = useState("");
@@ -44,6 +44,8 @@ const CheckoutScreen = ({ navigation, route }) => {
   const [streetAddress, setStreetAddress] = useState("");
   const [zipcode, setZipcode] = useState("");
   const [adress2, setAddress2] = useState({});
+  const [ phoneNumber, setPhoneNumber] = useState('');
+  const [location, setLocation] = useState()
 
   //method to remove the authUser from aysnc storage and navigate to login
   const logout = async () => {
@@ -54,12 +56,21 @@ const CheckoutScreen = ({ navigation, route }) => {
   const loadAdresses = async () => {
     const data = await AsyncStorage.getItem("authUser");
     if(data){
-      const authUser = JSON.parse(data);
-      const {email} = authUser ;  
-      setAddress2({"email" : email}) ;
+      const authUser = JSON.parse(data);  
+      setLocation(authUser.location);
+      console.log("authenticated user is : ",authUser);
     }
-    const d = new Date();
-    console.log(d);
+    ///const d = new Date();
+    //console.log(d);
+    try {
+      const value = await AsyncStorage.getItem("phoneNumber");
+      if (value !== null) {
+        setPhoneNumber(value);
+        console.log("phone value is : ",value);
+      }
+    } catch (error) {
+      console.error("Failed to load phone number", error);
+    }
   }
   const handleCheckout = async () => {
     setIsloading(true);
@@ -83,13 +94,10 @@ const CheckoutScreen = ({ navigation, route }) => {
       items: payload,
       amount: totalamount,
       discount: 0,
-      payment_type: "cod",
-      country: country,
       status: "pending",
-      city: city,
-      zipcode: zipcode,
       shippingAddress: streetAddress,
-      email: mail,
+      phoneNumber: phoneNumber,
+      location : location
     };
   
     try {
@@ -107,20 +115,29 @@ const CheckoutScreen = ({ navigation, route }) => {
     navigation.navigate("orderconfirm");
   };
 
+  const retrievePhoneNumber = async () => {
+    
+  };
   // set the address and total cost on initital render
-  useEffect(() => {
-    loadAdresses();
-    if (streetAddress && city && country != "") {
-      setAddress(`${streetAddress}, ${city},${country}`);
+  useEffect(async () => {
+    
+    loadAdresses();  // Call the async function
+  
+    // Update address string if streetAddress, city, or country changes
+    if (streetAddress && city && country) {
+      setAddress(`${streetAddress}, ${city}, ${country}`);
     } else {
       setAddress("");
     }
+  
+    // Calculate total cost
     setTotalCost(
       cartproduct.reduce((accumulator, object) => {
         return accumulator + object.price * object.quantity;
       }, 0)
     );
-  }, []);
+  }, [streetAddress, city, country, cartproduct]);  // Ensure these dependencies are tracked
+  
 
   return (
     <View style={styles.container}>
@@ -183,7 +200,7 @@ const CheckoutScreen = ({ navigation, route }) => {
           </View>
           <View style={styles.list}>
             <Text style={styles.secondaryTextSm}>Phone</Text>
-            <Text style={styles.secondaryTextSm}>+92 3410988683</Text>
+            <Text style={styles.secondaryTextSm}>{phoneNumber}</Text>
           </View>
         </View>
         <Text style={styles.primaryText}>Address</Text>

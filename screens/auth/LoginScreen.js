@@ -35,9 +35,9 @@ const LoginScreen = ({ navigation }) => {
   const [otp, setOtp] = useState('');
 
   const verifyCode = async () => {
-    setIsLoading(true);
-    console.log(otp);
-    try {
+    //setIsLoading(true);
+    navigation.navigate('confirmlocation', {phoneNumber : phoneNumber});
+   /* try {
       const response = await axios.post('http://192.168.8.153:3000/verify-code', {
         phoneNumber: "+212606060481",
         code: otp,
@@ -52,7 +52,9 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {
       console.error('Error verifying code:', error);
       setIsLoading(false);
-    }
+    } 
+      
+    */
   };
 
 
