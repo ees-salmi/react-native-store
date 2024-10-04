@@ -30,6 +30,7 @@ import SendOtp from "../screens/auth/SendOtp";
 import AddBrandScreen from "../screens/admin/AddBrandScreen";
 import ViewBrandScreen from "../screens/admin/AddBrandScreen";
 import HomeScreen from "../screens/user/HomeScreen.js";
+import AdminLogin from "../screens/auth/AdminLogin";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,7 @@ const Routes = () => {
         
         
         <Stack.Screen name="login" component={LoginScreen} />
+        <Stack.Screen name="adminlogin" component={AdminLogin} />
         <Stack.Screen name="signup" component={SignupScreen} />
         <Stack.Screen name="sendotp" component={SendOtp} />
         <Stack.Screen name="confirmlocation" component={ConfirmLocation} />

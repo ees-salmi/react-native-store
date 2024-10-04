@@ -84,6 +84,10 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  const adminscreen = () => {
+    navigation.navigate("adminlogin")
+  }
+
  
 
   return (
@@ -134,8 +138,8 @@ const LoginScreen = ({ navigation }) => {
           { isVisible && <CustomButton text={ <ArabicText  fweight={700} fsize={26} text={"تأكيد"} /> } onPress={verifyCode}  />}
         </View>
         <View style={styles.bottomContainer}>
-       { /* <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>
-        <ArabicText fsize={14} text={'انشاء حساب'} />*/}
+        <Text onPress={adminscreen} style={styles.signupText}>Admin</Text>
+        
           
         </View>
       </KeyboardAvoidingView>

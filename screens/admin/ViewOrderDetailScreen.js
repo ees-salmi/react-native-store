@@ -19,6 +19,7 @@ import firebaseConfig from "../../config";
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+import ModalDialog from "../../components/Modal/Modal";
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -158,6 +159,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.ShipingInfoContainer}>
+          <ModalDialog />
           <Text style={styles.secondarytextMedian}>
             {orderDetail?.user?.name}
           </Text>
@@ -166,6 +168,8 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           </Text>
           <Text style={styles.secondarytextSm}>{address}</Text>
           <Text style={styles.secondarytextSm}>{orderDetail?.zipcode}</Text>
+        </View>
+        <View>
         </View>
         <View>
           <Text style={styles.containerNameText}>معلومات الطلب</Text>

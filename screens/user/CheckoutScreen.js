@@ -97,7 +97,8 @@ const CheckoutScreen = ({ navigation, route }) => {
       status: "pending",
       shippingAddress: streetAddress,
       phoneNumber: phoneNumber,
-      location : location
+      location : location,
+      createdAt : new Date()
     };
   
     try {
