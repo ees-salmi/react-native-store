@@ -13,19 +13,16 @@ import {
   import header_logo from "../../assets/logo/logo.png";
   import CustomButton from "../../components/CustomButton";
   import CustomAlert from "../../components/CustomAlert/CustomAlert";
-  import LoginComponent from "../../components/LoginComponent/LoginComponent";
   import ProgressDialog from "react-native-progress-dialog";
   import InternetConnectionAlert from "react-native-internet-connection-alert";
   import AsyncStorage from "@react-native-async-storage/async-storage";
   // Import the functions you need from the SDKs you need
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
   import { initializeApp } from "firebase/app";
-  import { getAnalytics } from "firebase/analytics";
   import firebaseConfig from "../../config";
   import ArabicText from "../../components/ArabicText/ArabicText";
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
   
   const AdminLogin = ({ navigation }) => {
     const [email, setEmail] = useState("");

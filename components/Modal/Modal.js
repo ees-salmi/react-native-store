@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import ArabicText from '../ArabicText/ArabicText';
-const ModalDialog = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+import MapView, { Marker } from 'react-native-maps';
 
+const ModalDialog = ({location}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  //const [locations, setLocations] = useState(location ? location : {coords : {latitude : 33.0015969, longitude : -7.60031}}); // Your location
+  console.log(location);
   const handleOpenModal = () => {
     setModalVisible(true);
   };
@@ -12,10 +15,39 @@ const ModalDialog = () => {
     setModalVisible(false);
   };
 
+  const ShowLocation = ({location}) => {
+    if (!location || !location.latitude || !location.longitude) {
+        return (
+          <View >
+            <ArabicText text={'الموقع عير محدد الموجو الاتصال'} />
+          </View>
+        );
+      }
+    return(
+      <MapView
+        style={styles.map}
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <Marker
+          coordinate={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }}
+          title="Current Location"
+        />
+      </MapView>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handleOpenModal} style={styles.button}>
-      <ArabicText fweight={700} text={'عرض على الخريطة'} />
+        <ArabicText fweight={700} text={'عرض على الخريطة'} />
       </TouchableOpacity>
 
       <Modal
@@ -26,7 +58,8 @@ const ModalDialog = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <ArabicText text={'عرض على الخريطة'} />
+            <ArabicText text={'  الخريطة'} />
+            <ShowLocation location={location}/>
             <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>اغلاق</Text>
             </TouchableOpacity>
@@ -37,7 +70,7 @@ const ModalDialog = () => {
   );
 };
 
-export default ModalDialog ;
+export default ModalDialog;
 
 const styles = StyleSheet.create({
   container: {
@@ -46,10 +79,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    padding: 2,
+    padding: 2
   },
-  buttonText: {
-    color: 'white',
+  map: {
+    width: 300, // Ensure the map has width
+    height: 300, // Ensure the map has height
+    marginBottom: 15,
   },
   modalOverlay: {
     flex: 1,
@@ -58,15 +93,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // To dim the background
   },
   modalContent: {
-    width: '80%',
+    width: '90%',
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 15,
   },
   closeButton: {
     padding: 10,

@@ -28,6 +28,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   const { orderDetail, Token } = route.params;
   const [isloading, setIsloading] = useState(false);
   const [label, setLabel] = useState("Loading..");
+  const [location, setLocation] = useState();
   const [error, setError] = useState("");
   const [alertType, setAlertType] = useState("error");
   const [totalCost, setTotalCost] = useState(0);
@@ -66,20 +67,15 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
     return `${date}-${month}-${year}`;
   };
   
-
-  //method to update the status using API call
   const handleUpdateStatus = async (orderId) => {
     setIsloading(true);
     setError("");
     setAlertType("error");
   
     try {
-      // Reference the document in Firestore for the specific order
       const orderRef = doc(db, "orders", orderId);
-  
-      // Update the status of the order
       await updateDoc(orderRef, {
-        status: value, // Assuming 'value' contains the new status
+        status: value, 
       });
   
       setError(
@@ -100,6 +96,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   // calculate the total cost and set the all requried variables on initial render
   useEffect(() => {
     setError("");
+    setLocation(orderDetail.location);
     setAlertType("error");
     if (orderDetail?.status == "delivered") {
       setStatusDisable(true);
@@ -159,7 +156,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.ShipingInfoContainer}>
-          <ModalDialog />
+          <ModalDialog location={location}/>
           <Text style={styles.secondarytextMedian}>
             {orderDetail?.user?.name}
           </Text>

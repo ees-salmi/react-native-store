@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { colors } from "../../constants";
 function getTime(date) {
   // Convert Firebase Timestamp to Date object if necessary
+  
   let t = date instanceof Date ? date : date.toDate();
   
   const hours = t.getHours();
