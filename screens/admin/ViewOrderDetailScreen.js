@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Linking
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { colors, network } from "../../constants";
@@ -28,7 +29,6 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   const { orderDetail, Token } = route.params;
   const [isloading, setIsloading] = useState(false);
   const [label, setLabel] = useState("Loading..");
-  const [location, setLocation] = useState();
   const [error, setError] = useState("");
   const [alertType, setAlertType] = useState("error");
   const [totalCost, setTotalCost] = useState(0);
@@ -36,6 +36,8 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
+  const [location, setLocation] = useState();
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [items, setItems] = useState([
     { label: "قيد الانتظار", value: "قيد الانتظار" },
     { label: "تم شحنها", value: "تم شحنها" },
@@ -97,6 +99,7 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
   useEffect(() => {
     setError("");
     setLocation(orderDetail.location);
+    setPhoneNumber(orderDetail.phoneNumber)
     setAlertType("error");
     if (orderDetail?.status == "delivered") {
       setStatusDisable(true);
@@ -158,10 +161,10 @@ const ViewOrderDetailScreen = ({ navigation, route }) => {
         <View style={styles.ShipingInfoContainer}>
           <ModalDialog location={location}/>
           <Text style={styles.secondarytextMedian}>
-            {orderDetail?.user?.name}
+            {orderDetail?.user?.name ? orderDetail?.user?.name : ''}
           </Text>
-          <Text style={styles.secondarytextMedian}>
-            {orderDetail?.user?.email}
+          <Text style={styles.secondarytextMedian} onPress={() => Linking.openURL(`tel:${phoneNumber}`)}>
+            {phoneNumber}
           </Text>
           <Text style={styles.secondarytextSm}>{address}</Text>
           <Text style={styles.secondarytextSm}>{orderDetail?.zipcode}</Text>
@@ -301,8 +304,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
+    justifyContent: "flex-center",
+    alignItems: "flex-center",
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 10,
