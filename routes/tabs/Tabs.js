@@ -15,7 +15,8 @@ import CategoriesScreen from "../../screens/user/CategoriesScreen";
 const Tab = createBottomTabNavigator();
 
 const Tabs = ({ navigation, route }) => {
-  const { user } = route.params;
+  //const { user } = route.params;
+  const user = {}
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

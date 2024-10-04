@@ -12,7 +12,7 @@ const CategoryCard = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.container, { width: cardSize === "large" ? "100%" : 150 }]}
+      style={[styles.container, { width: cardSize === "large" ? "100%" : 110 }]}
       onPress={onPress}
     >
       <View style={styles.imageContainer}>
@@ -22,7 +22,7 @@ const CategoryCard = ({
         <View>
           <Text style={styles.secondaryTextSm}>{`${name.substring(
             0,
-            10
+            13
           )}..`}</Text>
           
         </View>
@@ -36,8 +36,8 @@ export default CategoryCard;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
-    width: 150,
-    height: 200,
+    width: 120,
+    height: 190,
     borderRadius: 10,
     display: "flex",
     flexDirection: "column",
@@ -60,25 +60,31 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   productImage: {
-    height: 120,
-    width: 120,
+    height: 108,
+    width: 108,
   },
   infoContainer: {
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     padding: 5,
+    backgroundColor : '#34bdeb',
+    borderRadius : 3,
+    marginTop : 5
+
   },
   secondaryTextSm: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
+    textAlign : 'right',
   },
   primaryTextSm: {
     fontSize: 15,
     fontWeight: "bold",
     color: colors.primary,
+    textAlign : 'right'
   },
   iconContainer: {
     backgroundColor: colors.primary,

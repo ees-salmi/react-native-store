@@ -32,6 +32,7 @@ import { initializeApp } from "firebase/app";
 import CategoryCard from "../../components/CategoryCard";
 import CategorySearchDropdown from "../../components/categorySearchDropDown/CategorySearchDropdown ";
 import ArabicText from '../../components/ArabicText/ArabicText';
+import Tabs from "../../routes/tabs/Tabs";
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -80,6 +81,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [searchItems, setSearchItems] = useState([]);
+  const [visibletab, SetVisibletab] = useState(false);
 
   const convertToJSON = (obj) => {
     try {
@@ -154,6 +156,9 @@ const HomeScreen = ({ navigation, route }) => {
     fetchProducts();
   }, []);
 
+  const showTabs = () => {
+    SetVisibletab(!visibletab);
+  }
  
 
   return (
@@ -161,8 +166,8 @@ const HomeScreen = ({ navigation, route }) => {
       <StatusBar />
       <ProgressDialog visible={isLoading} label={label} />
       <View style={styles.topBarContainer}>
-        <TouchableOpacity disabled>
-          <Ionicons name="menu" size={30} color={colors.muted} />
+        <TouchableOpacity >
+          <Ionicons name="menu" size={30} color={colors.muted} onPress={showTabs} />
         </TouchableOpacity>
         <View style={styles.topbarlogoContainer}>
           <Image source={easybuylogo} style={styles.logo} />
@@ -197,7 +202,7 @@ const HomeScreen = ({ navigation, route }) => {
           </View>
         </View>
         <ScrollView nestedScrollEnabled>
-          <View style={styles.promotiomSliderContainer}>
+          { /*<View style={styles.promotiomSliderContainer}>
             <SliderBox
               images={slides.length ? slides : [DEFAULT_IMAGE_URL]}
               sliderBoxHeight={140}
@@ -206,7 +211,7 @@ const HomeScreen = ({ navigation, route }) => {
               paginationBoxVerticalPadding={10}
               autoplayInterval={6000}
             />
-          </View>
+          </View> */}
           <View style={styles.primaryTextContainer}>
              <ArabicText fsize={25}  text={'  الفئات '} ></ArabicText>
           </View>
@@ -324,13 +329,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   primaryTextContainer: {
-    padding: 20,
+    padding: 5,
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "flex-end",
     width: "100%",
-    paddingTop: 5,
   },
   primaryText: {
     fontSize: 20,
@@ -411,11 +415,10 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap', // This ensures multiple rows if necessary
-    justifyContent: 'space-between', // Adjust space between the items
     paddingHorizontal: 10,
   },
   productCardContainerItem: {
-    width: '48%', // Adjust width to ensure two cards fit in one row
-    marginBottom: 10, // Add some margin for spacing between rows
+    width: '30%', // Adjust width to ensure two cards fit in one row
+    marginRight: 10 , // Add some margin for spacing between rows
   },
 });

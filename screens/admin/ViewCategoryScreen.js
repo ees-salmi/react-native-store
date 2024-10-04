@@ -119,6 +119,7 @@ const ViewCategoryScreen = ({ navigation, route }) => {
         categorie.push({ id: doc.id, ...doc.data() });
       });
       setCategories(categorie);
+      setFoundItems(categorie);
       setError("");
     } catch (error) {
       setError(error.message);

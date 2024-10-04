@@ -28,6 +28,7 @@ import firebaseConfig from "../../config";
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -48,6 +49,7 @@ const CategoriesScreen = ({ navigation, route }) => {
   const [brand, setBrand] = useState([]);
   const [foundbrand, setFoundbrand] = useState([]);
   const [selectedTab, setSelectedTab] = useState(category[0]);
+
 
   //get the dimenssions of active window
   const [windowWidth, setWindowWidth] = useState(
@@ -250,7 +252,7 @@ const CategoriesScreen = ({ navigation, route }) => {
     setCategoryNam("");
     setFoundItems([]);
     setBrand([]);
-    navigation.jumpTo("home");
+    navigation.navigate("homescreen");
 
   }
   //fetch the product on initial render
