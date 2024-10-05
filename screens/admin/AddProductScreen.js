@@ -19,6 +19,7 @@ import ProgressDialog from "react-native-progress-dialog";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
+import { Dropdown } from 'react-native-element-dropdown';
 import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
@@ -48,8 +49,11 @@ const AddProductScreen = ({ navigation, route }) => {
   const [openbrand, setOpenbrand] = useState(false);
   const [value, setValue] = useState(null);
   const [statusDisable, setStatusDisable] = useState(false);
+  const [statusDisablec, setStatusDisablec] = useState(false);
   const [items, setItems] = useState([]);
   const [brandes, setBrandes] = useState([]);
+  const [isFocus, setIsFocus] = useState(false);
+  const [isFocusc, setIsFocusc] = useState(false);
   var payload = [];
 
   //method to convert the authUser to json object.
@@ -94,6 +98,7 @@ const AddProductScreen = ({ navigation, route }) => {
       setIsloading(false);
     } else if (brand == ""){
       setError("specify the brand")
+      setIsloading(false);
     }
     // } else if (image == null) {
     //   setError("Please upload the product image");
@@ -230,78 +235,105 @@ const AddProductScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             )}
           </View>
-
-          <CustomInput
-            value={sku}
-            setValue={setSku}
-            placeholder={"SKU"}
-            placeholderTextColor={colors.muted}
-            radius={5}
-          />
-          <CustomInput
-            value={title}
-            setValue={setTitle}
-            placeholder={"Title"}
-            placeholderTextColor={colors.muted}
-            radius={5}
-          />
-          <CustomInput
-            value={price}
-            setValue={setPrice}
-            placeholder={"Price"}
-            keyboardType={"number-pad"}
-            placeholderTextColor={colors.muted}
-            radius={5}
-          />
-          <CustomInput
-            value={quantity}
-            setValue={setQuantity}
-            placeholder={"Quantity"}
-            keyboardType={"number-pad"}
-            placeholderTextColor={colors.muted}
-            radius={5}
-          />
-          <CustomInput
-            value={description}
-            setValue={setDescription}
-            placeholder={"Description"}
-            placeholderTextColor={colors.muted}
-            radius={5}
-          />
-          <DropDownPicker
-            placeholder={"Select brand "}
-            open={open}
-            value={brand}
-            items={brandes}
-            setOpen={setOpen}
-            setValue={setBrand}
-            setItems={setBrandes}
-            disabled={statusDisable}
+          <View style={styles.inputs}>
+              
+            <CustomInput
+              value={sku}
+              setValue={setSku}
+              placeholder={"SKU"}
+              placeholderTextColor={colors.muted}
+              radius={5}
+              style={styles.dropdown}
+            />
+            <CustomInput
+              value={title}
+              setValue={setTitle}
+              placeholder={"Title"}
+              placeholderTextColor={colors.muted}
+              radius={5}
+              style={styles.dropdown}
+            />
+            <CustomInput
+              value={price}
+              setValue={setPrice}
+              placeholder={"Price"}
+              keyboardType={"number-pad"}
+              placeholderTextColor={colors.muted}
+              radius={5}
+              style={styles.dropdown}
+            />
+            <CustomInput
+              value={quantity}
+              setValue={setQuantity}
+              placeholder={"Quantity"}
+              keyboardType={"number-pad"}
+              placeholderTextColor={colors.muted}
+              radius={5}
+              style={styles.dropdown}
+            />
+            <CustomInput
+              value={description}
+              setValue={setDescription}
+              placeholder={"Description"}
+              placeholderTextColor={colors.muted}
+              radius={5}
+              style={styles.dropdown}
+            />
+            <Dropdown
+              style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              placeholder={"Select brand "}
+              value={brand}
+              data={brandes}
+              dropdownPosition='top'
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              disabled={statusDisable}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                setBrand(item.value);
+                setIsFocus(false);
+              }}
+              disabledStyle={{
+                backgroundColor: colors.light,
+                borderColor: colors.white,
+              }}
+              labelStyle={{ color: colors.muted }}
+            />
+      
+          <Dropdown
+            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            placeholder={"Select Category"}
+            value={category}
+            data={items} // The array containing your category items
+            dropdownPosition='top'
+            maxHeight={300}
+            labelField="label"  // The key for the label of each item in the list
+            valueField="value"  // The key for the value of each item in the list
+            disabled={statusDisablec}
+            onFocus={() => setIsFocusc(true)}
+            onBlur={() => setIsFocusc(false)}
+            onChange={item => {
+              setCategory(item.value);  // Set the selected category value
+              setIsFocusc(false);  // Close the dropdown
+            }}
             disabledStyle={{
               backgroundColor: colors.light,
               borderColor: colors.white,
             }}
             labelStyle={{ color: colors.muted }}
-            style={{ borderColor: "#fff", elevation: 5 }}
           />
         </View>
-     
-          <DropDownPicker
-            placeholder={"Select  Category"}
-            open={openbrand}
-            value={category}
-            items={items}
-            setOpen={setOpenbrand}
-            setValue={setCategory}
-            setItems={setItems}
-            disabled={statusDisable}
-            disabledStyle={{
-              backgroundColor: colors.light,
-              borderColor: colors.white,
-            }}
-            labelStyle={{ color: colors.muted }}
-            style={{ borderColor: "#fff", elevation: 5 }}
-          />
+      </View>
        </ScrollView>
       <View style={styles.buttomContainer}>
         <CustomButton text={"Add Product"} onPress={addProductHandle} />
@@ -387,4 +419,44 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
   },
+  dropdown: {
+    height: 45,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    width : 200
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  inputs : {
+    flex: 1, // Make the view take the full height
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+    padding: 20, // Add some padding
+  }
 });

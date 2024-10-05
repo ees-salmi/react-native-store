@@ -14,14 +14,17 @@ const ProductCard = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.container, { width: cardSize === "large" ? "100%" : 150 }]}
+      style={[
+        styles.container,
+        { width: cardSize === "small" ? "30%" : 100 } // Adjust the width to fit three cards in a row
+      ]}
       onPress={onPress}
     >
       <View style={styles.imageContainer}>
         <Image source={{ uri: image }} style={styles.productImage} />
       </View>
       <View style={styles.infoContainer}>
-      <View>
+        <View>
           {quantity > 0 ? (
             <TouchableOpacity
               style={styles.iconContainer}
@@ -52,8 +55,7 @@ export default ProductCard;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
-    width: 150,
-    height: 200,
+    height: 150, // Reduced height
     borderRadius: 10,
     display: "flex",
     flexDirection: "column",
@@ -61,22 +63,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     elevation: 5,
+    margin: 5, // Add margin to create spacing between cards
   },
   imageContainer: {
     backgroundColor: colors.light,
     width: "100%",
-    height: 140,
+    height: 100, // Reduced height
     borderRadius: 10,
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     alignItems: "center",
-    padding: 5,
-    paddingBottom: 0,
   },
   productImage: {
-    height: 120,
-    width: 120,
+    height: 80, // Reduced image size
+    width: 80,
   },
   infoContainer: {
     width: "100%",
@@ -84,34 +84,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 5,
+    paddingTop: 5,
   },
   secondaryTextSm: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
   },
   primaryTextSm: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "bold",
     color: colors.primary,
   },
   iconContainer: {
     backgroundColor: colors.primary,
-    width: 30,
-    height: 30,
+    width: 25, // Reduced size
+    height: 25,
     borderRadius: 5,
     display: "flex",
-
     justifyContent: "center",
     alignItems: "center",
   },
   iconContainerDisable: {
     backgroundColor: colors.muted,
-    width: 30,
-    height: 30,
+    width: 25, // Reduced size
+    height: 25,
     borderRadius: 5,
     display: "flex",
-
     justifyContent: "center",
     alignItems: "center",
   },

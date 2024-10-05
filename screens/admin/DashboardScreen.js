@@ -42,7 +42,7 @@ const DashboardScreen = ({ navigation, route }) => {
               value: 3,
               iconName: "person",
               type: "أساسي",
-              screenName: "عرض_المستخدمين",
+              screenName: "viewusers",
             },
             {
               id: 2,
@@ -50,7 +50,7 @@ const DashboardScreen = ({ navigation, route }) => {
               value: 6,
               iconName: "cart",
               type: "ثانوي",
-              screenName: "عرض_الطلبات",
+              screenName: "vieworder",
             },
             {
               id: 3,
@@ -58,7 +58,7 @@ const DashboardScreen = ({ navigation, route }) => {
               value: 19,
               iconName: "laptop",
               type: "تحذير",
-              screenName: "عرض_المنتجات",
+              screenName: "viewproduct",
             },
             {
               id: 4,
@@ -66,7 +66,7 @@ const DashboardScreen = ({ navigation, route }) => {
               value: 11,
               iconName: "menu",
               type: "مقفل",
-              screenName: "عرض_الفئات",
+              screenName: "viewcategories",
             },
           ]);
              
@@ -133,7 +133,7 @@ const DashboardScreen = ({ navigation, route }) => {
                   value={data.value}
                   type={data.type}
                   onPress={() => {
-                    /*navigation.navigate(data.screenName, { authUser: user })*/;
+                    navigation.navigate(data.screenName, { authUser: user });
                   }}
                 />
               ))}

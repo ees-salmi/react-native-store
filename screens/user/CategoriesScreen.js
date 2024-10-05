@@ -361,6 +361,7 @@ const CategoriesScreen = ({ navigation, route }) => {
           </View>
         ) : (
           <FlatList
+          key={3}
             data={foundItems}
             refreshControl={
               <RefreshControl
@@ -370,13 +371,10 @@ const CategoriesScreen = ({ navigation, route }) => {
             }
             keyExtractor={(index, item) => `${index}-${item}`}
             contentContainerStyle={{ margin: 10 }}
-            numColumns={2}
+            numColumns={3}
             renderItem={({ item: product }) => (
               <View
-                style={[
-                  styles.productCartContainer,
-                  { width: (windowWidth - windowWidth * 0.1) / 2 },
-                ]}
+                style={styles.productCartContainer} 
               >
                 <ProductCard
                   cardSize={"large"}
@@ -453,15 +451,9 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   productCartContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     borderRadius: 10,
-    margin: 5,
-    padding: 5,
-    paddingBottom: 0,
-    paddingTop: 0,
-    marginBottom: 0,
+    width : "30%",
+    margin: 5
   },
   noItemContainer: {
     width: "100%",
