@@ -424,8 +424,7 @@ const styles = StyleSheet.create({
     flexDirecion: "row",
     backgroundColor: colors.light,
 
-    justifyContent: "flex-start",
-    flex: 1,
+    justifyContent: "flex-start"
   },
   cartIconContainer: {
     display: "flex",

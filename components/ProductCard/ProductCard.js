@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     elevation: 5,
-    margin: 5, // Add margin to create spacing between cards
   },
   imageContainer: {
     backgroundColor: colors.light,

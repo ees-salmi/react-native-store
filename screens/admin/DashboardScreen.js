@@ -32,6 +32,7 @@ const DashboardScreen = ({ navigation, route }) => {
   //   await AsyncStorage.removeItem("authUser");
   //   navigation.replace("login");
   // };
+  
 
   const fetchStats = () => {
           //set the fetched data to Data state

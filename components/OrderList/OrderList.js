@@ -76,9 +76,19 @@ const OrderList = ({ item, onPress }) => {
       </View>
       <View style={styles.innerRow}>
         <TouchableOpacity style={styles.detailButton} onPress={onPress}>
-          <Text>Details</Text>
+          <Text>تفاصيل</Text>
         </TouchableOpacity>
-        <Text style={styles.secondaryText}>{item?.status}</Text>
+        <Text 
+          style={[
+            item?.status === 'قيد الانتظار' && styles.pending,
+            item?.status === 'تم شحنها' && styles.shipped,
+            item?.status === 'تم التوصيل' && styles.delivered
+          ]}
+        >
+          {item?.status}
+        </Text>
+
+
       </View>
     </View>
   );
@@ -139,5 +149,23 @@ const styles = StyleSheet.create({
     borderColor: colors.muted,
     color: colors.muted,
     width: 100,
+  },
+  pending: {
+    backgroundColor: '#FFD700', // gold color for "Pending"
+    color: 'black',
+    padding: 2,
+    borderRadius: 5,
+  },
+  shipped: {
+    backgroundColor: '#00BFFF', // deep sky blue color for "Shipped"
+    color: 'white',
+    padding: 2,
+    borderRadius: 5,
+  },
+  delivered: {
+    backgroundColor: '#32CD32', // lime green color for "Delivered"
+    color: 'white',
+    padding: 2,
+    borderRadius: 5,
   },
 });
