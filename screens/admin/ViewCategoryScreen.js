@@ -21,6 +21,7 @@ import firebaseConfig from "../../config";
 import { getStorage} from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+import ArabicText from "../../components/ArabicText/ArabicText";
 const app = initializeApp(firebaseConfig);
 const storage =  getStorage(app);
 const db = getFirestore(app);
@@ -177,10 +178,10 @@ const ViewCategoryScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>View Categories</Text>
+          <ArabicText fsize={50} fweight={500} text={"الفئات"} />
         </View>
         <View>
-          <Text style={styles.screenNameParagraph}>View all Categories</Text>
+          <Text style={styles.screenNameParagraph}>جميع الفئات</Text>
         </View>
       </View>
       <CustomAlert message={error} type={alertType} />
@@ -262,8 +263,8 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     marginBottom: 10,
   },
   screenNameText: {

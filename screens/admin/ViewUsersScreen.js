@@ -15,7 +15,12 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import CustomInput from "../../components/CustomInput/";
 import ProgressDialog from "react-native-progress-dialog";
 import UserList from "../../components/UserList/UserList";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import firebaseConfig from "../../config";
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const ViewUsersScreen = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const { authUser } = route.params;
@@ -40,37 +45,31 @@ const ViewUsersScreen = ({ navigation, route }) => {
     return JSON.parse(obj).token;
   };
 
-  //method the fetch the users from server using API call
-  const fetchUsers = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("x-auth-token", getToken(authUser));
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
+  const fetchUsers = async () => {
     setIsloading(true);
-    fetch(`${network.serverip}/admin/users`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setUsers(result.data);
-          setFoundItems(result.data);
-          setError("");
-        } else {
-          setError(result.message);
-        }
-        setIsloading(false);
-      })
-      .catch((error) => {
-        setIsloading(false);
-        setError(error.message);
-        console.log("error", error);
-      });
+    try {
+      const querySnapshot = await getDocs(collection(db, "userDetails"));
+      const usersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id, 
+        ...doc.data(), 
+      }));
+  
+      if (usersData.length > 0) {
+        setUsers(usersData);
+        setFoundItems(usersData);
+        console.log(usersData);
+        setError(""); 
+      } else {
+        setError("No users found.");
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error("Error fetching users from Firestore:", error);
+    } finally {
+      setIsloading(false); 
+    }
   };
 
-  //method call on pull refresh
   const handleOnRefresh = () => {
     setRefreshing(true);
     fetchUsers();
@@ -151,7 +150,7 @@ const ViewUsersScreen = ({ navigation, route }) => {
             <UserList
               key={index}
               username={item?.name}
-              email={item?.email}
+              email={item?.phoneNumber}
               usertype={item?.userType}
             />
           ))

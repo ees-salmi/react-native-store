@@ -123,16 +123,15 @@ import {
             <ArabicText style={styles.screenNameText} fsize={28} fweight={80} text={'تسجيل الدخول'} />
               
             </View>
-            <CustomInput value={email} setValue={setEmail} placeholder="البريد الالكتروني" />
-            <CustomInput value={password} setValue={setPassword} placeholder="كلمة المرور" secureTextEntry />
+            <CustomInput value={email} setValue={setEmail} placeholder="Email" />
+            <CustomInput value={password} setValue={setPassword} placeholder="mot de passe " secureTextEntry />
             {error ? <CustomAlert message={error} type="error" /> : null}
           </ScrollView>
           <View style={styles.buttomContainer}>
             <CustomButton text={ <ArabicText fsize={20} text={'دخول'} /> } onPress={handleAuthentication} />
           </View>
           <View style={styles.bottomContainer}>
-          <Text onPress={() => navigation.navigate("signup")} style={styles.signupText}>تسجيل</Text>
-          <ArabicText fsize={14} text={'انشاء حساب'} />
+          
             
           </View>
         </KeyboardAvoidingView>
