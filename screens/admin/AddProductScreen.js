@@ -248,7 +248,7 @@ const AddProductScreen = ({ navigation, route }) => {
             <CustomInput
               value={title}
               setValue={setTitle}
-              placeholder={"Title"}
+              placeholder={"العنوان "}
               placeholderTextColor={colors.muted}
               radius={5}
               style={styles.dropdown}
@@ -256,7 +256,7 @@ const AddProductScreen = ({ navigation, route }) => {
             <CustomInput
               value={price}
               setValue={setPrice}
-              placeholder={"Price"}
+              placeholder={"الثمن "}
               keyboardType={"number-pad"}
               placeholderTextColor={colors.muted}
               radius={5}
@@ -265,7 +265,7 @@ const AddProductScreen = ({ navigation, route }) => {
             <CustomInput
               value={quantity}
               setValue={setQuantity}
-              placeholder={"Quantity"}
+              placeholder={"الكمية "}
               keyboardType={"number-pad"}
               placeholderTextColor={colors.muted}
               radius={5}
@@ -274,7 +274,7 @@ const AddProductScreen = ({ navigation, route }) => {
             <CustomInput
               value={description}
               setValue={setDescription}
-              placeholder={"Description"}
+              placeholder={"وصف "}
               placeholderTextColor={colors.muted}
               radius={5}
               style={styles.dropdown}
@@ -285,7 +285,7 @@ const AddProductScreen = ({ navigation, route }) => {
               selectedTextStyle={styles.selectedTextStyle}
               inputSearchStyle={styles.inputSearchStyle}
               iconStyle={styles.iconStyle}
-              placeholder={"Select brand "}
+              placeholder={"اخترالماركة "}
               value={brand}
               data={brandes}
               dropdownPosition='top'
@@ -312,7 +312,7 @@ const AddProductScreen = ({ navigation, route }) => {
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
-            placeholder={"Select Category"}
+            placeholder={"اختر الصنف"}
             value={category}
             data={items} // The array containing your category items
             dropdownPosition='top'
@@ -363,9 +363,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 2,
     justifyContent: "flex-start",
-    alignItems: "center",
-    display: "flex",
-    width: "100%",
+    
     flexDirecion: "row",
     padding: 5,
   },
@@ -425,7 +423,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
-    width : 200
+    width : 270,
+    marginLeft : 20,
+    marginBottom : 5
   },
   icon: {
     marginRight: 5,

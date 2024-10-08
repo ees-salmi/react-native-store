@@ -11,7 +11,11 @@ import { getAnalytics } from "firebase/analytics";
 import firebaseConfig from "../../config";
 import ArabicText from "../../components/ArabicText/ArabicText";
 // Initialize Firebase
+import { getFirestore, setDoc, doc } from "firebase/firestore";
+
+
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default function ConfirmLocation({ navigation, route }) {
   const { phoneNumber } = route.params;
@@ -21,6 +25,7 @@ export default function ConfirmLocation({ navigation, route }) {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({});
   const auth = getAuth(app);
+  const name = "essalmi";
 
  /* useEffect(() => {
     console.log("Phone Number:", phoneNumber); // Debugging
@@ -38,6 +43,7 @@ export default function ConfirmLocation({ navigation, route }) {
       const updatedUser = {
         ...userCredentials.user,
         phoneNumber: phoneNumber,
+        name : name,
         location : {
           latitude : latitude,
           longitude : longitude
@@ -46,6 +52,16 @@ export default function ConfirmLocation({ navigation, route }) {
       if(phone){
         await AsyncStorage.setItem("phoneNumber", phone);
       }
+
+      const userRef = doc(db, "userDetails", userCredentials.user.uid); // "userDetails" is the collection name, and the document id will be the user's UID
+      await setDoc(userRef, {
+        name: updatedUser.name, // Assuming user's name is stored in displayName
+        phoneNumber: phoneNumber,
+        location: {
+          latitude: latitude,
+          longitude: longitude,
+        },
+      });
       
       setUser(updatedUser); 
 

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     width: 120,
-    height: 190,
+    height: 160,
     borderRadius: 10,
     display: "flex",
     flexDirection: "column",
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     backgroundColor: colors.light,
     width: "100%",
-    height: 140,
+    height: 110,
     borderRadius: 10,
     display: "flex",
     flexDirection: "column",
