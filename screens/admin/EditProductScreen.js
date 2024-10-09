@@ -138,10 +138,10 @@ const EditProductScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>Edit Product</Text>
+          <Text style={styles.screenNameText}>تعديل المنتج</Text>
         </View>
         <View>
-          <Text style={styles.screenNameParagraph}>Edit product details</Text>
+          <Text style={styles.screenNameParagraph}>تعديل</Text>
         </View>
       </View>
       <CustomAlert message={error} type={"error"} />
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
   },
   screenNameText: {
     fontSize: 30,

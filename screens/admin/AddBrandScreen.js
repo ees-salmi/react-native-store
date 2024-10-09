@@ -169,10 +169,10 @@ import {
         </View>
         <View style={styles.screenNameContainer}>
           <View>
-            <Text style={styles.screenNameText}>Add brand</Text>
+            <Text style={styles.screenNameText}>Ajouter une marque</Text>
           </View>
           <View>
-            <Text style={styles.screenNameParagraph}>Add brand details</Text>
+            <Text style={styles.screenNameParagraph}>remplir les details</Text>
           </View>
         </View>
         <CustomAlert message={error} type={alertType} />
@@ -198,7 +198,7 @@ import {
             <CustomInput
               value={title}
               setValue={setTitle}
-              placeholder={"Title"}
+              placeholder={"nom"}
               placeholderTextColor={colors.muted}
               radius={5}
             />
@@ -213,7 +213,7 @@ import {
         </ScrollView>
         
         <View style={styles.buttomContainer}>
-          <CustomButton text={"Add Product"} onPress={addProductHandle} />
+          <CustomButton text={"ajouter"} onPress={addProductHandle} />
         </View>
       </KeyboardAvoidingView>
     );

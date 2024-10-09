@@ -182,7 +182,7 @@ const MyOrderDetailScreen = ({ navigation, route }) => {
 
         <View style={styles.containerNameContainer}>
           <View>
-            <Text style={styles.containerNameText}>Package Details</Text>
+            <Text style={styles.containerNameText}>les deatils du package</Text>
           </View>
         </View>
         <View style={styles.orderItemsContainer}>
@@ -192,7 +192,7 @@ const MyOrderDetailScreen = ({ navigation, route }) => {
           </View>
           <View style={styles.orderItemContainer}>
             <Text style={styles.orderItemText}>
-              Order on : {orderDetail?.updatedAt}
+              demander en : {orderDetail?.updatedAt}
             </Text>
           </View>
           <ScrollView

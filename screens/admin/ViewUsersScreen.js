@@ -123,10 +123,10 @@ const ViewUsersScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.screenNameContainer}>
         <View>
-          <Text style={styles.screenNameText}>View Users</Text>
+          <Text style={styles.screenNameText}> المستخدمين</Text>
         </View>
         <View>
-          <Text style={styles.screenNameParagraph}>View all Users</Text>
+          <Text style={styles.screenNameParagraph}></Text>
         </View>
       </View>
       <CustomAlert message={error} type={alertType} />

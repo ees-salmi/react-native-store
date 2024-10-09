@@ -32,7 +32,7 @@ const DashboardScreen = ({ navigation, route }) => {
   //   await AsyncStorage.removeItem("authUser");
   //   navigation.replace("login");
   // };
-  
+
 
   const fetchStats = () => {
           //set the fetched data to Data state
@@ -40,7 +40,7 @@ const DashboardScreen = ({ navigation, route }) => {
             {
               id: 1,
               title: "المستخدمين",
-              value: 3,
+              value: 6,
               iconName: "person",
               type: "أساسي",
               screenName: "viewusers",
@@ -148,7 +148,7 @@ const DashboardScreen = ({ navigation, route }) => {
         <View style={{ flex: 1, width: "100%" }}>
           <ScrollView style={styles.actionContainer}>
             <OptionList
-              text={"Products"}
+              text={"les produits"}
               Icon={Ionicons}
               iconName={"laptop"}
               onPress={() =>
@@ -160,7 +160,7 @@ const DashboardScreen = ({ navigation, route }) => {
               type="morden"
             />
             <OptionList
-              text={"Categories"}
+              text={"les categories"}
               Icon={Ionicons}
               iconName={"menu"}
               onPress={() =>
@@ -172,7 +172,7 @@ const DashboardScreen = ({ navigation, route }) => {
               type="morden"
             />
             <OptionList
-              text={"Brands"}
+              text={"les marques"}
               Icon={Ionicons}
               iconName={"filter"}
               onPress={() =>

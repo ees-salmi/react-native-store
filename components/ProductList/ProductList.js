@@ -24,18 +24,18 @@ const ProductList = ({
           )}
         </View>
         <View style={styles.productInfoContainer}>
-          <Text style={styles.productTitle}>{title}</Text>
+          <Text style={styles.productTitle}>Titre : {title}</Text>
           <View style={styles.productInfoItem}>
-            <Text style={styles.productInfoItemText}>Category: </Text>
+            <Text style={styles.productInfoItemText}>Categorie: </Text>
             <Text>{category}</Text>
           </View>
           <View style={styles.productInfoItem}>
-            <Text style={styles.productInfoItemText}>Price: </Text>
-            <Text>{price}</Text>
+            <Text style={styles.productInfoItemText}>Prix: </Text>
+            <Text>{price} dh</Text>
           </View>
           <View style={styles.productInfoItem}>
-            <Text style={styles.productInfoItemText}>SKU: </Text>
-            <Text>{qantity <= 0 ? "Out of Stock" : qantity}</Text>
+            <Text style={styles.productInfoItemText}>quantité: </Text>
+            <Text>{qantity <= 0 ? "pas de produit" : qantity}</Text>
           </View>
         </View>
       </View>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
     height: 30,
     width: 30,
     backgroundColor: colors.primary,
@@ -120,4 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: colors.muted,
   },
+  showProduct : {
+    alignContent : 'flex-end'
+  }
 });
