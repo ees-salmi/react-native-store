@@ -2,6 +2,7 @@ import { StyleSheet, Image, View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "../../constants";
+import CustomSwitch from '../Switch/Switch';
 
 const ProductList = ({
   category,
@@ -52,6 +53,8 @@ const ProductList = ({
         >
           <MaterialIcons name={"delete"} size={15} color={colors.white} />
         </TouchableOpacity>
+          <CustomSwitch />
+
       </View>
     </TouchableOpacity>
   );

@@ -4557,6 +4557,11 @@ expo-eas-client@~0.12.0:
   resolved "https://registry.npmjs.org/expo-eas-client/-/expo-eas-client-0.12.0.tgz"
   integrity sha512-Jkww9Cwpv0z7DdLYiRX0r4fqBEcI9cKqTn7cHx63S09JaZ2rcwEE4zYHgrXwjahO+tU2VW8zqH+AJl6RhhW4zA==
 
+expo-file-system@^17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-17.0.1.tgz#b9f8af8c1c06ec71d96fd7a0d2567fa9e1c88f15"
+  integrity sha512-dYpnZJqTGj6HCYJyXAgpFkQWsiCH3HY1ek2cFZVHFoEc5tLz9gmdEgTF6nFHurvmvfmXqxi7a5CXyVm0aFYJBw==
+
 expo-file-system@~17.0.1:
   version "17.0.1"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-17.0.1.tgz"
@@ -7867,6 +7872,11 @@ react-native-get-location@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/react-native-get-location/-/react-native-get-location-5.0.0.tgz#06c9e94336a76a47af446605cc0bd25cab3a2ba1"
   integrity sha512-IzedYG98V45Z4suLl7GTLZGH+ujn0uvSGP6E5wpJbW/oySHPNJXJUCIFgK2RLhKOClPn/uWBJMvNd7h4ttz3QA==
+
+react-native-html-to-pdf@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/react-native-html-to-pdf/-/react-native-html-to-pdf-0.12.0.tgz#2b467296f85c9c9783a7288b19722a7028dcbcb8"
+  integrity sha512-Yb5WO9SfF86s5Yv9PqXQ7fZDr9zZOJ+6jtweT9zFLraPNHWX7pSxe2dSkeg3cGiNrib65ZXGN6ksHymfYLFSSg==
 
 react-native-image-picker@^4.8.5:
   version "4.10.3"
